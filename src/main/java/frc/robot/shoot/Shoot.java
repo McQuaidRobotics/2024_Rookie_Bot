@@ -8,9 +8,30 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class Shoot {
-    private final TalonFX lead = new TalonFX(0);
-    private final TalonFX follow = new TalonFX(1);
+    private final TalonFX lead;
+    private final TalonFX follow;
 
+    public Shoot() {
+
+        this.lead = new TalonFX(0);
+        this.follow = new TalonFX(1);
+        this.lead.getConfigurator()
+            .apply(leadMotorConfig());
+        this.follow.getConfigurator()
+            .apply(followMotorConfig());
+        
+        // our motors are set up now shoot.
+        // set the motors RPM to launch
+        
+        double percentOutput = 100.0;
+
+        this.follow.setControl
+
+        
+
+
+
+    } 
     private TalonFXConfiguration leadMotorConfig() {
         var cfg = new TalonFXConfiguration();
         
@@ -35,7 +56,5 @@ public class Shoot {
         
 
         return cfg;
-
-
     }
 }
