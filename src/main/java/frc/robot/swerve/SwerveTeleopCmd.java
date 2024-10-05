@@ -6,11 +6,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-public class TeleopCmd extends Command {
+public class SwerveTeleopCmd extends Command {
     public final Drive subsystem; // we pass it a swerve drive
     public final CommandXboxController controller;
 
-    public TeleopCmd(Drive subsystem, CommandXboxController controller) {
+    public SwerveTeleopCmd(Drive subsystem, CommandXboxController controller) {
         this.subsystem = subsystem; // assign the swerve drive so we can use its methoids
         this.controller = controller;
 

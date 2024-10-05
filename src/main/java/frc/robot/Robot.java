@@ -9,11 +9,14 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.shoot.Shoot;
+import frc.robot.shoot.ShootTeleopCmd;
 import frc.robot.swerve.Drive;
-import frc.robot.swerve.TeleopCmd;
+import frc.robot.swerve.SwerveTeleopCmd;
 
 public class Robot extends TimedRobot {
   private final Drive drive = new Drive();
+  private final Shoot shoot = new Shoot();
   private final CommandXboxController xboxController = new CommandXboxController(0);
 
   
@@ -21,9 +24,12 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     drive.setDefaultCommand(
-      new TeleopCmd(drive, xboxController)
+      new SwerveTeleopCmd(drive, xboxController)
     );
     
+    shoot.setDefaultCommand(
+      new ShootTeleopCmd(shoot, xboxController)
+    );
   }
 
   @Override

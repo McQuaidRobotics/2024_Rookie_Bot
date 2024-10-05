@@ -4,12 +4,12 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-public class TeleopCmd extends Command{
+public class ShootTeleopCmd extends Command{
     
     public final CommandXboxController shootingController;
     public final Shoot sub;
 
-    public TeleopCmd(Shoot sub, CommandXboxController shootingController) {
+    public ShootTeleopCmd(Shoot sub, CommandXboxController shootingController) {
         this.sub = sub;
         this.shootingController = shootingController;
 
