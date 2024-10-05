@@ -9,7 +9,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-public class Shoot {
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class Shoot extends SubsystemBase {
     private final TalonFX lead;
     private final TalonFX follow;
 
@@ -25,11 +27,14 @@ public class Shoot {
         // our motors are set up now shoot.
         // set the motors RPM to launch
         
-        double percentOutput = 100.0;
+    
 
-        this.lead.setControl(new VoltageOut(12 * percentOutput));
+    }
+    public void shootNote() {
+        double percentOutput = 1.0;
+
+        this.lead.setControl(new VoltageOut(12.0 * percentOutput));
         this.follow.setControl(new Follower(0, true));
-
     } 
     public void stopShooting() {
         lead.stopMotor();
