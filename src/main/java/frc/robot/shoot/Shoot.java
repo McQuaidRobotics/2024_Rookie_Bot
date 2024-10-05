@@ -3,6 +3,8 @@ package frc.robot.shoot;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -25,13 +27,14 @@ public class Shoot {
         
         double percentOutput = 100.0;
 
-        this.follow.setControl
-
-        
-
-
+        this.lead.setControl(new VoltageOut(12 * percentOutput));
+        this.follow.setControl(new Follower(0, true));
 
     } 
+    public void stopShooting() {
+        lead.stopMotor();
+        follow.stopMotor();
+    }
     private TalonFXConfiguration leadMotorConfig() {
         var cfg = new TalonFXConfiguration();
         
