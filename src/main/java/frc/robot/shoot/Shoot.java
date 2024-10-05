@@ -12,17 +12,12 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shoot extends SubsystemBase {
-    private final TalonFX lead;
-    private final TalonFX follow;
+    private final TalonFX motor;
 
     public Shoot() {
-
-        this.lead = new TalonFX(0);
-        this.follow = new TalonFX(1);
-        this.lead.getConfigurator()
+        this.motor = new TalonFX(10, "DriveBus");
+        this.motor.getConfigurator()
             .apply(leadMotorConfig());
-        this.follow.getConfigurator()
-            .apply(followMotorConfig());
         
         // our motors are set up now shoot.
         // set the motors RPM to launch
@@ -33,12 +28,10 @@ public class Shoot extends SubsystemBase {
     public void shootNote() {
         double percentOutput = 1.0;
 
-        this.lead.setControl(new VoltageOut(12.0 * percentOutput));
-        this.follow.setControl(new Follower(0, true));
+        this.motor.setControl(new VoltageOut(12.0 * percentOutput));
     } 
     public void stopShooting() {
-        lead.stopMotor();
-        follow.stopMotor();
+        motor.stopMotor();
     }
     private TalonFXConfiguration leadMotorConfig() {
         var cfg = new TalonFXConfiguration();
@@ -49,19 +42,6 @@ public class Shoot extends SubsystemBase {
         cfg.Slot0.kI = 0.0;
         cfg.Slot0.kD = 0.0;
 
-
-        return cfg;
-    }
-
-    private TalonFXConfiguration followMotorConfig() {
-        var cfg = new TalonFXConfiguration();
-
-        cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-
-        cfg.Slot0.kP = 0.1;
-        cfg.Slot0.kI = 0.0;
-        cfg.Slot0.kD = 0.0;
-        
 
         return cfg;
     }
