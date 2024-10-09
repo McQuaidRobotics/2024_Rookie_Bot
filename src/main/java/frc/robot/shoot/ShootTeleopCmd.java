@@ -26,7 +26,7 @@ public class ShootTeleopCmd extends Command{
         lTrig = MathUtil.applyDeadband(lTrig, .1);
 
         if (rTrig > lTrig) {
-            sub.shootNote();
+            sub.runShooterRads(50.0);
         } else{
             sub.stopShooting();
         }

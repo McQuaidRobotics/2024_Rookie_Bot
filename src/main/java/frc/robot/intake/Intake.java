@@ -1,4 +1,4 @@
-package frc.intake;
+package frc.robot.intake;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
