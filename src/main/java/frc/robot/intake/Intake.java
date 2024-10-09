@@ -35,26 +35,6 @@ public class Intake extends SubsystemBase{
         // this.bot_Intake.getConfigurator()
         //     .apply(botMotorConfiguration());
     }
-    public void intakeNote() { // should run intake motors in opposite directions to pick up note I do not know how to make it stop if note is in
-        double percentOutput = 1.0;
-        // you need to put the pivot down
-        this.top_Intake.setControl(new VoltageOut(12.0 * percentOutput));
-        
-    }
-
-    public void expellNote() {
-        double percentOutput = -1.0;
-        this.top_Intake.setControl(new VoltageOut(12.0 * percentOutput));
-    }
-
-    public void transferNote(boolean isInChamber) {
-
-        if(isInChamber){
-            double percentOutput = .5;
-            this.top_Intake.setControl(new VoltageOut(12.0 * percentOutput));
-        }
-
-    }
     public void setRollerVoltageOut(double volts) {
         top_Intake.setControl(controlReqVolts.withOutput(volts));
     }
@@ -74,6 +54,9 @@ public class Intake extends SubsystemBase{
     }
     public void homeArmHere() {
         arm.setPosition(BACK_HARD_STOP / ARM_RATIO);
+    }
+    public boolean hasNoteLeft() {
+        return ampSignalRoller.refresh().getValueAsDouble() < 100;
     }
     // TODO 
     //CHECK IF NOTE IS IN THE CHAMBER.
@@ -137,6 +120,12 @@ public class Intake extends SubsystemBase{
             .andThen(() -> this.setRollerVoltageOut(0.0))
             .andThen(this.stowAcquisition())
             .withName("IntakeAcquisition");
+    }
+    public Command transferNote() {
+        return this.run(() -> this.setRollerVoltageOut(-6.0))
+            .until(this::hasNoteLeft)
+            .withName("TransferingNote");
+        //run motors backwards untill it gets easier to spin rollers    
     }
 }
 

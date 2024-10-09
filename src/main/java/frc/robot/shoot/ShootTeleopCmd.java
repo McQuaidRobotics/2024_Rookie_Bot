@@ -18,19 +18,11 @@ public class ShootTeleopCmd extends Command{
 
     @Override
     public void execute() {
+        // on pressing the right trigger it will run the shooter untill the note leaves the shooter
 
-        double rTrig = shootingController.getRightTriggerAxis();
-        double lTrig = shootingController.getLeftTriggerAxis();
-
-        rTrig = MathUtil.applyDeadband(rTrig, .1);
-        lTrig = MathUtil.applyDeadband(lTrig, .1);
-
-        if (rTrig > lTrig) {
-            sub.runShooterRads(50.0);
-        } else{
-            sub.stopShooting();
-        }
-    }
+        shootingController.rightTrigger(.3).onTrue(sub.shootNote()); // IDK IF THIS WILL WORK IDK ABOUT THE ONTRUE
+    }       
+}
 
     
-}
+

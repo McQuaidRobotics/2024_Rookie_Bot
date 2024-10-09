@@ -18,8 +18,7 @@ public class IntakeTeleopCmd extends Command{
     @Override
     public void execute() {
         intakeController.x().onTrue(sub.homeIntake());
-        intakeController.a().onTrue(sub.stowAcquisition());
-        intakeController.y().onTrue(sub.intakeAcquisition());
+        intakeController.y().onTrue(sub.intakeAcquisition()); // will pick up stow then transfer note
 
     }
 }
