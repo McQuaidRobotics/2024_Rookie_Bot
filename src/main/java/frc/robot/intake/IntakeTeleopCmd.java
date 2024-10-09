@@ -17,6 +17,7 @@ public class IntakeTeleopCmd extends Command{
 
     @Override
     public void execute() {
-        
+        intakeController.x().onTrue(sub.homeIntake());
+
     }
 }

@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase{
@@ -111,6 +112,31 @@ public class Intake extends SubsystemBase{
 
 
         return cfg;
+    }
+    public Command homeIntake() {
+        return this.run(() -> this.setRollerVoltageOut(-5.0))
+            .until(this::isArmCurrentTripped)
+            .withTimeout(2.0)
+            .andThen(() -> this.setArmVoltageOut(0.0))
+            .andThen(this::homeArmHere)
+            .withName("HomeAcquisition");
+    }
+
+    public Command stowAcquisition() {
+        //TODO: get stow pos
+        return this.run(() -> this.setArmPosition(0));
+    }
+
+    public Command intakeAcquisition() {
+        return this.run(() -> {
+                this.setRollerVoltageOut(-12.0);
+                //TODO: get intake pos
+                this.setArmPosition(0.0);
+            })
+            .until(this::isRollerCurrentTripped)
+            .andThen(() -> this.setRollerVoltageOut(0.0))
+            .andThen(this.stowAcquisition())
+            .withName("IntakeAcquisition");
     }
 }
 
