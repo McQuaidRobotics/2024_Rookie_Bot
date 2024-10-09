@@ -27,7 +27,7 @@ public class Robot extends TimedRobot {
       new SwerveTeleopCmd(drive, xboxController)
     );
 
-    xboxController.a().onTrue(shoot.run(() -> shoot.shootNote()));
+   
   }
 
   @Override
