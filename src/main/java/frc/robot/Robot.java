@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.intake.Intake;
+import frc.robot.intake.IntakeTeleopCmd;
 import frc.robot.shoot.Shoot;
 import frc.robot.shoot.ShootTeleopCmd;
 import frc.robot.swerve.Drive;
@@ -29,7 +30,13 @@ public class Robot extends TimedRobot {
       new SwerveTeleopCmd(drive, xboxController)
     );
 
-   
+  intake.setDefaultCommand(
+    new IntakeTeleopCmd(intake, xboxController)
+  );
+  
+  shoot.setDefaultCommand(
+    new ShootTeleopCmd(shoot, xboxController)
+  );
   }
 
   @Override
