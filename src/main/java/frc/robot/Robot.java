@@ -11,8 +11,11 @@ import frc.robot.intake.Intake;
 import frc.robot.shoot.Shooter;
 import frc.robot.swerve.Drive;
 import frc.robot.swerve.SwerveTeleopCmd;
+import monologue.Logged;
+import monologue.Monologue;
+import monologue.Monologue.MonologueConfig;
 
-public class Robot extends TimedRobot {
+public class Robot extends TimedRobot implements Logged {
   private final Drive drive = new Drive();
   private final Intake intake = new Intake();
   private final Shooter shooter = new Shooter();
@@ -25,6 +28,16 @@ public class Robot extends TimedRobot {
     );
 
     cofigureBindings();
+
+    Monologue.setupMonologue(
+      this,
+      "/Robot",
+      new MonologueConfig()
+        .withDatalogPrefix("")
+    );
+
+    Monologue.log("/Robot/myValue", 42.0);
+    log("myValue", 42.0);
   }
 
   void cofigureBindings() {

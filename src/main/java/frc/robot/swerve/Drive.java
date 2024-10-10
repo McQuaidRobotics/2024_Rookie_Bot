@@ -19,11 +19,12 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 //import frc.robot.led.Lights;
+import monologue.Logged;
 
-public class Drive extends SubsystemBase {
+public class Drive extends SubsystemBase implements Logged {
     public final Pigeon2 gyro;
     public final StatusSignal<Double> gyroDegrees;
-    
+
     private static final double TRACK_WIDTH = 0.551;
     public final Module[] modules;
     private static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
@@ -35,10 +36,8 @@ public class Drive extends SubsystemBase {
     StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
         .getStructTopic("/Robot/Drive/Pose", Pose2d.struct)
         .publish();
-        
 
     public Drive(){
-        
         this.gyro = new Pigeon2(33, "DriveBus");
         this.gyroDegrees = gyro.getYaw();
         this.modules= new Module[] {
