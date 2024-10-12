@@ -106,7 +106,7 @@ public class Module implements Logged {
     public void periodic() {
         log("AngleMotorDegrees", Units.rotationsToDegrees(angleMotor.getPosition().getValueAsDouble())/ANGLE_GEAR_RATIO);
         log("AngleMotorVelocityRPM", 60.0*(angleMotor.getVelocity().getValueAsDouble())/ANGLE_GEAR_RATIO);
-        log("VelocityMotorVelocityRPM", 60.0*(velocityMotor.getVelocity().getValueAsDouble())/DRIVE_GEAR_RATIO);
+        log("VelocityMotorVelocityRPM", 60.0*(velocityMotorVelocity.getValueAsDouble())/DRIVE_GEAR_RATIO);
         log("VelocityMotorVelocityVoltage", (velocityMotor.getMotorVoltage().getValueAsDouble()));
 
     }

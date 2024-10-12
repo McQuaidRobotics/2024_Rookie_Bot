@@ -16,7 +16,7 @@ import monologue.Logged;
 
 public class Shooter extends SubsystemBase implements Logged {
     private final TalonFX motor;
-    private final StatusSignal<Double> ampSignalShooter, veloSignalShooter;
+    private final StatusSignal<Double> veloSignalShooter;
 
     private double targetVelocity = 0.0;
 
@@ -24,7 +24,6 @@ public class Shooter extends SubsystemBase implements Logged {
         this.motor = new TalonFX(10, "DriveBus");
         this.motor.getConfigurator()
             .apply(leadMotorConfig());
-        this.ampSignalShooter = motor.getTorqueCurrent();
         this.veloSignalShooter = motor.getVelocity();
     }
 
