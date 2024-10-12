@@ -76,8 +76,8 @@ public class Shooter extends SubsystemBase implements Logged {
     }
     @Override
     public void periodic() {
-        log("ShooterVelocity", motor.getVelocity().getValueAsDouble());
-        log("ShooterAmperage", motor.getStatorCurrent().getValueAsDouble());
+        log("ShooterVelocity", motor.getVelocity().getValueAsDouble() * 60.0);
+        log("ShooterAmperage", motor.getStatorCurrent().getValueAsDouble() * 60.0);
         log("ShooterPosition", motor.getPosition().getValueAsDouble());
         log("TargetVelocity", targetVelocity);
     }
