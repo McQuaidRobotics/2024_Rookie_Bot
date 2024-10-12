@@ -17,7 +17,7 @@ import monologue.Logged;
 import edu.wpi.first.math.util.Units;
 
 public class Module implements Logged {
-    
+
     private final TalonFX angleMotor;
     private final TalonFX velocityMotor;
     private final CANcoder encoder;
@@ -27,6 +27,11 @@ public class Module implements Logged {
     private final StatusSignal<Double> velocityMotorPosition;
     private final int moduleId;
     private Rotation2d lastAngle = new Rotation2d();
+
+    private static final double WHEEL_CIRCUMFERENCE = 0.31918;
+    private static final double DRIVE_GEAR_RATIO = 5.35714;
+    private static final double ANGLE_GEAR_RATIO = 21.428571428571427;
+
     public Module(int moduleId, double offset){
         this.moduleId = moduleId;
         this.encoder = new CANcoder(log("encoderId", moduleId + 21), "DriveBus");
@@ -53,9 +58,9 @@ public class Module implements Logged {
         cfg.Slot0.kP = 11.0;
         cfg.Slot0.kI = 0.0;
         cfg.Slot0.kD = 0.0;
-        
+
         cfg.Feedback.FeedbackRemoteSensorID = this.encoder.getDeviceID();
-        cfg.Feedback.RotorToSensorRatio = 21.428571428571427;
+        cfg.Feedback.RotorToSensorRatio = ANGLE_GEAR_RATIO;
         cfg.ClosedLoopGeneral.ContinuousWrap = true;
 
         return cfg;
@@ -75,9 +80,6 @@ public class Module implements Logged {
         return cfg;
     }
 
-    private static final double WHEEL_CIRCUMFERENCE = 0.31918;
-    private static final double DRIVE_GEAR_RATIO = 5.35714;
-    private static final double ANGLE_GEAR_RATIO = 21.428571428571427;
     private double driveRotationsToMeters(double rotations) {
         return (rotations / DRIVE_GEAR_RATIO) * WHEEL_CIRCUMFERENCE;
     }
@@ -89,11 +91,14 @@ public class Module implements Logged {
     }
 
     public void applyState(SwerveModuleState state, boolean isOpenLoop){
-        state = SwerveModuleState.optimize(state, Rotation2d.fromRotations(encoderAngle.getValue())); // optimize
+        log("Preoptimized", state);
+        state = SwerveModuleState.optimize(state, Rotation2d.fromRotations(encoderAngle.getValue()));
+        log("Postoptimized", state);
 
-        Rotation2d angle = Math.abs(state.speedMetersPerSecond) <= 0.05 ? lastAngle : state.angle; // deadband
+        Rotation2d angle = Math.abs(state.speedMetersPerSecond) <= 0.05 ? lastAngle : state.angle;
+        log("Angle", angle);
 
-        angleMotor.setControl(new PositionDutyCycle(angle.getRotations())); //apply
+        angleMotor.setControl(new PositionDutyCycle(angle.getRotations()));
 
         lastAngle = angle;
         if (isOpenLoop){

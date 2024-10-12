@@ -12,10 +12,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-//import frc.robot.led.Lights;
 import monologue.Logged;
 
 public class Drive extends SubsystemBase implements Logged {
@@ -30,9 +27,6 @@ public class Drive extends SubsystemBase implements Logged {
         new Translation2d(-TRACK_WIDTH/2.0, -TRACK_WIDTH/2.0),
         new Translation2d(TRACK_WIDTH/2.0, TRACK_WIDTH/2.0)
     );
-    StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
-        .getStructTopic("/Robot/Drive/Pose", Pose2d.struct)
-        .publish();
 
     public Drive(){
         this.gyro = new Pigeon2(33, "DriveBus");
@@ -43,8 +37,6 @@ public class Drive extends SubsystemBase implements Logged {
             new Module(2, -0.4182),
             new Module(3, -0.1086)
         };
-
-    
 
     } 
 
@@ -59,7 +51,7 @@ public class Drive extends SubsystemBase implements Logged {
         },
         new Pose2d(),
         VecBuilder.fill(0.1, 0.1, 0.1),
-        VecBuilder.fill(1.0, 1.0, 1.0)    
+        VecBuilder.fill(1.0, 1.0, 1.0)
     );
 
     public SwerveModulePosition[] getModulePositions() {
@@ -71,26 +63,31 @@ public class Drive extends SubsystemBase implements Logged {
     }
 
     public void drive(ChassisSpeeds speed, boolean isOpenLoop){
+        log("speed", speed);
         setModuleState(KINEMATICS.toSwerveModuleStates(speed), isOpenLoop);
-        var p = swerveDrivePoseEstimator.update(getYaw(), getModulePositions());
-        posePublisher.set(p);
-
     }
-    
+
     private void setModuleState(SwerveModuleState[] states, boolean isOpenLoop){
+        log("states", states);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, 5.0);
-        
+        log("desaturated", states);
         for (int i = 0; i < states.length; i ++) {
             modules[i].applyState(states[i], isOpenLoop);
         }
     }
-    
+
     public void setYaw(Rotation2d rot){
         gyro.setYaw(rot.getDegrees());
     }
 
     public Rotation2d getYaw(){
-        return Rotation2d.fromDegrees(gyroDegrees.getValue()); // getting the angle of the robot
+        return Rotation2d.fromDegrees(gyroDegrees.getValue());
     }
-    
+
+    @Override
+    public void periodic() {
+        log("Yaw", getYaw());
+        log("Pose", swerveDrivePoseEstimator.update(getYaw(), getModulePositions()));
+        log("Positions", getModulePositions());
+    }
 }

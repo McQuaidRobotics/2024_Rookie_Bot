@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import monologue.Monologue;
 
 public class SwerveTeleopCmd extends Command {
     public final Drive subsystem; // we pass it a swerve drive
@@ -19,14 +20,12 @@ public class SwerveTeleopCmd extends Command {
 
     @Override
     public void execute() {
-        // TODO Auto-generated method stub
-
         double x = controller.getLeftX();
         double y = controller.getLeftY() * -1.0;
         double r = controller.getRightX() * -1.0;
-        x = MathUtil.applyDeadband(x, .1);
-        y = MathUtil.applyDeadband(y, .1);
-        r = MathUtil.applyDeadband(r, .1);
+        x = Monologue.log("/Robot/Drive/Controller", MathUtil.applyDeadband(x, .1));
+        y = Monologue.log("/Robot/Drive/Controller", MathUtil.applyDeadband(y, .1));
+        r = Monologue.log("/Robot/Drive/Controller", MathUtil.applyDeadband(r, .1));
         ChassisSpeeds zoomies = ChassisSpeeds.fromFieldRelativeSpeeds(x * 5.0, y* 5.0, r * Math.PI * 2, subsystem.getYaw());
         subsystem.drive(zoomies, true);
 
