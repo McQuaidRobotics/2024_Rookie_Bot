@@ -13,8 +13,10 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import monologue.Logged;
+import edu.wpi.first.math.util.Units;
 
-public class Module {
+public class Module implements Logged {
     
     private final TalonFX angleMotor;
     private final TalonFX velocityMotor;
@@ -75,6 +77,7 @@ public class Module {
 
     private static final double WHEEL_CIRCUMFERENCE = 0.31918;
     private static final double DRIVE_GEAR_RATIO = 5.35714;
+    private static final double ANGLE_GEAR_RATIO = 21.428571428571427;
     private double driveRotationsToMeters(double rotations) {
         return (rotations / DRIVE_GEAR_RATIO) * WHEEL_CIRCUMFERENCE;
     }
@@ -82,7 +85,7 @@ public class Module {
     public SwerveModulePosition getPosition() {
         double veloPos = driveRotationsToMeters(velocityMotorPosition.getValue());
         double rotPos = angleMotorAngle.getValue();
-        return new SwerveModulePosition(veloPos, Rotation2d.fromRotations(rotPos/21.428571428571427));
+        return new SwerveModulePosition(veloPos, Rotation2d.fromRotations(rotPos/ANGLE_GEAR_RATIO));
     }
 
     public void applyState(SwerveModuleState state, boolean isOpenLoop){
@@ -99,6 +102,18 @@ public class Module {
         } else {
 
         }
+    }
+    public void periodic() {
+        log("AngleMotorDegrees", Units.rotationsToDegrees(angleMotor.getPosition().getValueAsDouble())/ANGLE_GEAR_RATIO);
+        log("AngleMotorVelocityRPM", 60.0*(angleMotor.getVelocity().getValueAsDouble())/ANGLE_GEAR_RATIO);
+        log("VelocityMotorVelocityRPM", 60.0*(velocityMotor.getVelocity().getValueAsDouble())/DRIVE_GEAR_RATIO);
+        log("VelocityMotorVelocityVoltage", (velocityMotor.getMotorVoltage().getValueAsDouble()));
+
+    }
+
+    @Override
+    public String getOverrideName() {
+        return "Module[" + moduleId + "]";
     }
 }
         
