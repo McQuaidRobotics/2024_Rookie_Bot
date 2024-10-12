@@ -14,9 +14,12 @@ public class HigherOrderCommands {
 
     public static Command transferAndShoot(Intake intake, Shooter shooter) {
         return Commands.parallel(
-            shooter.spinUp(shooterRpm::value),
+            shooter.spinUpRpm(shooterRpm::value),
             intake.transferNote()
                 .beforeStarting(Commands.waitUntil(shooter::hasSpunUp))
+        ).beforeStarting(
+            intake.stowAcquisition()
+                .until(() -> intake.isArmAt(Intake.BACK_HARD_STOP))
         );
     }
 }

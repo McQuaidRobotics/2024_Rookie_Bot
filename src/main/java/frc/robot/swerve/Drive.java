@@ -14,7 +14,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -51,7 +50,6 @@ public class Drive extends SubsystemBase implements Logged {
 
     } 
 
-    
     SwerveDrivePoseEstimator swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(
         KINEMATICS,
         new Rotation2d(),
@@ -65,6 +63,7 @@ public class Drive extends SubsystemBase implements Logged {
         VecBuilder.fill(0.1, 0.1, 0.1),
         VecBuilder.fill(1.0, 1.0, 1.0)    
     );
+
     public SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
         for (int i = 0; i < 4; i++) {
@@ -72,8 +71,8 @@ public class Drive extends SubsystemBase implements Logged {
         }
         return modulePositions;
     }
+
     public void drive(ChassisSpeeds speed, boolean isOpenLoop){
-        //Lights.lights(speed);
         setModuleState(KINEMATICS.toSwerveModuleStates(speed), isOpenLoop);
         var p = swerveDrivePoseEstimator.update(getYaw(), getModulePositions());
         posePublisher.set(p);
@@ -91,6 +90,7 @@ public class Drive extends SubsystemBase implements Logged {
     public void setYaw(Rotation2d rot){
         gyro.setYaw(rot.getDegrees());
     }
+
     public Rotation2d getYaw(){
         return Rotation2d.fromDegrees(gyroDegrees.getValue()); // getting the angle of the robot
     }

@@ -12,8 +12,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import monologue.Logged;
 
-public class Shooter extends SubsystemBase {
+public class Shooter extends SubsystemBase implements Logged {
     private final TalonFX motor;
     private final StatusSignal<Double> ampSignalShooter, veloSignalShooter;
 
@@ -62,15 +63,20 @@ public class Shooter extends SubsystemBase {
         return Units.radiansPerSecondToRotationsPerMinute(veloSignalShooter.refresh().getValueAsDouble());
     }
 
-    public Command spinUp(double rpm) {
-        return run(() ->this.runShooterRpm(rpm))
-            .until(this::hasSpunUp)
-            .withName("spinUp");
+    public Command spinUpRpm(double rpm) {
+        return spinUpRpm(() -> rpm);
     }
 
-    public Command spinUp(DoubleSupplier rpmSupplier) {
+    public Command spinUpRpm(DoubleSupplier rpmSupplier) {
         return run(() -> this.runShooterRpm(rpmSupplier.getAsDouble()))
             .until(this::hasSpunUp)
             .withName("spinUp");
+    }
+    @Override
+    public void periodic() {
+        log("ShooterVelocity", motor.getVelocity().getValueAsDouble() * 60.0);
+        log("ShooterAmperage", motor.getStatorCurrent().getValueAsDouble());
+        log("ShooterPosition", motor.getPosition().getValueAsDouble());
+        log("TargetVelocity", targetVelocity);
     }
 }
