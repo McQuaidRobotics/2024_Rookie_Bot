@@ -34,8 +34,8 @@ public class Intake extends SubsystemBase implements Logged {
     boolean hasNote = false;
 
     public Intake() {
-        this.armMotor = new TalonFX(11, "DriveBus");
-        this.rollerMotor = new TalonFX(12, "DriveBus");
+        this.armMotor = new TalonFX(11);
+        this.rollerMotor = new TalonFX(12);
         this.ampSignalArm = armMotor.getTorqueCurrent();
         this.armMotor.getConfigurator()
             .apply(pivotMotorConfiguration());

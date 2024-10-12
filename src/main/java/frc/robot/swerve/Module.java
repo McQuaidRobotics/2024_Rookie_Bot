@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.CANcoder;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -55,11 +56,12 @@ public class Module implements Logged {
         cfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-        cfg.Slot0.kP = 11.0;
+        cfg.Slot0.kP = 3.0;
         cfg.Slot0.kI = 0.0;
         cfg.Slot0.kD = 0.0;
 
         cfg.Feedback.FeedbackRemoteSensorID = this.encoder.getDeviceID();
+        cfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
         cfg.Feedback.RotorToSensorRatio = ANGLE_GEAR_RATIO;
         cfg.ClosedLoopGeneral.ContinuousWrap = true;
 
@@ -87,7 +89,7 @@ public class Module implements Logged {
     public SwerveModulePosition getPosition() {
         double veloPos = driveRotationsToMeters(velocityMotorPosition.getValue());
         double rotPos = angleMotorAngle.getValue();
-        return new SwerveModulePosition(veloPos, Rotation2d.fromRotations(rotPos/ANGLE_GEAR_RATIO));
+        return new SwerveModulePosition(veloPos, Rotation2d.fromRotations(rotPos));
     }
 
     public void applyState(SwerveModuleState state, boolean isOpenLoop){
@@ -95,12 +97,12 @@ public class Module implements Logged {
         state = SwerveModuleState.optimize(state, Rotation2d.fromRotations(encoderAngle.getValue()));
         log("Postoptimized", state);
 
-        Rotation2d angle = Math.abs(state.speedMetersPerSecond) <= 0.05 ? lastAngle : state.angle;
-        log("Angle", angle);
+        // Rotation2d angle = Math.abs(state.speedMetersPerSecond) <= 0.05 ? lastAngle : state.angle;
+        log("Angle", state.angle);
 
-        angleMotor.setControl(new PositionDutyCycle(angle.getRotations()));
+        angleMotor.setControl(new PositionDutyCycle(state.angle.getRotations()));
 
-        lastAngle = angle;
+        // lastAngle = angle;
         if (isOpenLoop){
             double percentOutput = state.speedMetersPerSecond/5.0;
             velocityMotor.set(percentOutput);
@@ -109,11 +111,10 @@ public class Module implements Logged {
         }
     }
     public void periodic() {
-        log("AngleMotorDegrees", Units.rotationsToDegrees(angleMotor.getPosition().getValueAsDouble())/ANGLE_GEAR_RATIO);
-        log("AngleMotorVelocityRPM", 60.0*(angleMotor.getVelocity().getValueAsDouble())/ANGLE_GEAR_RATIO);
-        log("VelocityMotorVelocityRPM", 60.0*(velocityMotorVelocity.getValueAsDouble())/DRIVE_GEAR_RATIO);
-        log("VelocityMotorVelocityVoltage", (velocityMotor.getMotorVoltage().getValueAsDouble()));
-
+        log("ActualModulePosition/AngleMotorRads", (angleMotor.getPosition().getValueAsDouble() * Math.PI * 2.0));
+        log("ActualModulePosition/AngleMotorVelocityRPM", 60.0*(angleMotor.getVelocity().getValueAsDouble()));
+        log("ActualModulePosition/VelocityMotorVelocityRPM", 60.0*(velocityMotorVelocity.getValueAsDouble())/DRIVE_GEAR_RATIO);
+        log("ActualModulePosition/VelocityMotorVelocityVoltage", (velocityMotor.getMotorVoltage().getValueAsDouble()));
     }
 
     @Override

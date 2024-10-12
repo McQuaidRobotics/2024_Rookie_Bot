@@ -23,9 +23,9 @@ public class SwerveTeleopCmd extends Command {
         double x = controller.getLeftX();
         double y = controller.getLeftY() * -1.0;
         double r = controller.getRightX() * -1.0;
-        x = Monologue.log("/Robot/Drive/Controller", MathUtil.applyDeadband(x, .1));
-        y = Monologue.log("/Robot/Drive/Controller", MathUtil.applyDeadband(y, .1));
-        r = Monologue.log("/Robot/Drive/Controller", MathUtil.applyDeadband(r, .1));
+        x = Monologue.log("/Robot/Drive/Controller/x", MathUtil.applyDeadband(x, .1));
+        y = Monologue.log("/Robot/Drive/Controller/y", MathUtil.applyDeadband(y, .1));
+        r = Monologue.log("/Robot/Drive/Controller/r", MathUtil.applyDeadband(r, .1));
         ChassisSpeeds zoomies = ChassisSpeeds.fromFieldRelativeSpeeds(x * 5.0, y* 5.0, r * Math.PI * 2, subsystem.getYaw());
         subsystem.drive(zoomies, true);
 

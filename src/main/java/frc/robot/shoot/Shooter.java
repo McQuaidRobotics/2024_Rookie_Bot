@@ -21,7 +21,7 @@ public class Shooter extends SubsystemBase implements Logged {
     private double targetVelocity = 0.0;
 
     public Shooter() {
-        this.motor = new TalonFX(10, "DriveBus");
+        this.motor = new TalonFX(10);
         this.motor.getConfigurator()
             .apply(leadMotorConfig());
         this.veloSignalShooter = motor.getVelocity();
