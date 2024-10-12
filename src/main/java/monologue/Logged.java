@@ -51,7 +51,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default boolean log(String key, boolean value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, value, level));
+      return value;
+    }
     Monologue.ntLogger.put(getFullPath(this) + "/" + key, value, level);
     return value;
   }
@@ -76,7 +79,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default int log(String key, int value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, value, level));
+      return value;
+    }
     Monologue.ntLogger.put(getFullPath(this) + "/" + key, value, level);
     return value;
   }
@@ -101,7 +107,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default long log(String key, long value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, value, level));
+      return value;
+    }
     Monologue.ntLogger.put(getFullPath(this) + "/" + key, value, level);
     return value;
   }
@@ -126,7 +135,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default float log(String key, float value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, value, level));
+      return value;
+    }
     Monologue.ntLogger.put(getFullPath(this) + "/" + key, value, level);
     return value;
   }
@@ -151,7 +163,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default double log(String key, double value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, value, level));
+      return value;
+    }
     Monologue.ntLogger.put(getFullPath(this) + "/" + key, value, level);
     return value;
   }
@@ -176,7 +191,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default String log(String key, String value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, value, level));
+      return value;
+    }
     Monologue.ntLogger.put(getFullPath(this) + "/" + key, value, level);
     return value;
   }
@@ -201,7 +219,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default byte[] log(String key, byte[] value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, value, level));
+      return value;
+    }
     Monologue.ntLogger.put(getFullPath(this) + "/" + key, value, level);
     return value;
   }
@@ -226,7 +247,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default boolean[] log(String key, boolean[] value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, value, level));
+      return value;
+    }
     Monologue.ntLogger.put(getFullPath(this) + "/" + key, value, level);
     return value;
   }
@@ -251,7 +275,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default int[] log(String key, int[] value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, value, level));
+      return value;
+    }
     Monologue.ntLogger.put(getFullPath(this) + "/" + key, value, level);
     return value;
   }
@@ -276,7 +303,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default long[] log(String key, long[] value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, value, level));
+      return value;
+    }
     Monologue.ntLogger.put(getFullPath(this) + "/" + key, value, level);
     return value;
   }
@@ -301,7 +331,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default float[] log(String key, float[] value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, value, level));
+      return value;
+    }
     Monologue.ntLogger.put(getFullPath(this) + "/" + key, value, level);
     return value;
   }
@@ -326,7 +359,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default double[] log(String key, double[] value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, value, level));
+      return value;
+    }
     Monologue.ntLogger.put(getFullPath(this) + "/" + key, value, level);
     return value;
   }
@@ -351,7 +387,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default String[] log(String key, String[] value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, value, level));
+      return value;
+    }
     Monologue.ntLogger.put(getFullPath(this) + "/" + key, value, level);
     return value;
   }
@@ -376,7 +415,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default <R extends StructSerializable> R log(String key, R value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, value, level));
+      return value;
+    }
     Monologue.ntLogger.put(getFullPath(this) + "/" + key, value, level);
     return value;
   }
@@ -401,7 +443,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default <R extends StructSerializable> R[] log(String key, R[] value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, value, level));
+      return value;
+    }
     Monologue.ntLogger.put(getFullPath(this) + "/" + key, value, level);
     return value;
   }
@@ -426,7 +471,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default <R> R log(String key, Struct<R> struct, R value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, struct, value, level));
+      return value;
+    }
     Monologue.ntLogger.putStruct(getFullPath(this) + "/" + key, struct, value, level);
     return value;
   }
@@ -451,7 +499,10 @@ public interface Logged {
    * @param level The log level to log the value under.
    */
   public default <R> R[] log(String key, Struct<R> struct, R[] value, LogLevel level) {
-    if (!Monologue.isMonologueReady(key) || Monologue.isMonologueDisabled()) return value;
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      Monologue.prematureCalls.add(() -> log(key, struct, value, level));
+      return value;
+    }
     Monologue.ntLogger.putStructArray(getFullPath(this) + "/" + key, struct, value, level);
     return value;
   }

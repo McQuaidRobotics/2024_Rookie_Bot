@@ -6,6 +6,9 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -13,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.WeakHashMap;
 import java.util.function.BooleanSupplier;
+import java.io.File;
 
 /**
  * The Monologue class is the main entry point for the Monologue library. It is responsible for
@@ -24,7 +28,7 @@ import java.util.function.BooleanSupplier;
  *
  * <p>Monologue works by creating a tree of objects that implement the {@link Logged} interface and
  * then logging the fields and methods of those objects to NetworkTables and Datalog based on their
- * annotations. For example let's say the root object is {@code RobotContainer.java}, you would
+ * annotations. For example let's say the root object is {@code Robot.java}, you would
  * implemenet {@link Logged} on the root object and then call {@link #setupMonologue(Logged, String,
  * MonologueConfig)} with the root object and a root path (typically "/Robot"). This will recurse
  * through all the fields in {@code RobotContainer.java} and search for more objects that implement
@@ -36,11 +40,6 @@ import java.util.function.BooleanSupplier;
  * checking.
  */
 public class Monologue extends GlobalLogged {
-
-  static {
-    // we need to make sure we never log network tables through the implicit wpilib logger
-    DataLogManager.logNetworkTables(false);
-  }
 
   /** The Monologue library wide FILE_ONLY flag, is used to filter logging behavior */
   private static boolean FILE_ONLY = true;
@@ -55,6 +54,7 @@ public class Monologue extends GlobalLogged {
   static final NTLogger ntLogger = new NTLogger();
   static final DataLogger dataLogger = new DataLogger();
   static final WeakHashMap<Logged, String> loggedRegistry = new WeakHashMap<Logged, String>();
+  static final ArrayList<Runnable> prematureCalls = new ArrayList<Runnable>();
 
   /**
    * An object to hold the configuration for the Monologue library. This allows for easier default
@@ -179,6 +179,8 @@ public class Monologue extends GlobalLogged {
     Timer timer = new Timer();
     timer.start();
 
+    dataLogger.log = monologifyDatalogManager();
+
     Monologue.config = config;
     HAS_SETUP_BEEN_CALLED = true;
     rootpath = NetworkTable.normalizeKey(rootpath, true);
@@ -200,16 +202,9 @@ public class Monologue extends GlobalLogged {
 
     dataLogger.prefix = config.datalogPrefix;
 
-    DataLog dataLog = DataLogManager.getLog();
-
-    NetworkTableInstance.getDefault()
-        .startEntryDataLog(dataLog, rootpath, config.datalogPrefix + rootpath);
-    NetworkTableInstance.getDefault().startConnectionDataLog(dataLog, "NTConnection");
-    DriverStation.startDataLog(dataLog, true);
-
     logObj(loggable, rootpath);
 
-    sendNetworkToFile(".schema/");
+    prematureCalls.forEach(Runnable::run);
 
     System.gc();
 
@@ -270,6 +265,16 @@ public class Monologue extends GlobalLogged {
       throw new IllegalStateException(
           "Tried to use Monologue.logObj before using a Monologue setup method");
 
+    if (loggedRegistry.containsKey(loggable)) {
+      MonologueLog.runtimeLog(
+          "Monologue.logObj() called on "
+              + loggable.getClass().getName()
+              + " with path "
+              + path
+              + " but it has already been logged");
+      return;
+    }
+
     if (path == null || path.isEmpty()) {
       MonologueLog.runtimeWarn("Invalid path for Monologue.logObj(): " + path);
       return;
@@ -282,7 +287,9 @@ public class Monologue extends GlobalLogged {
 
     loggedRegistry.put(loggable, path);
 
-    for (Field field : getAllFields(loggable.getClass())) {
+    var fields = getAllFields(loggable.getClass());
+    MonologueLog.runtimeLog(fields.size() + " fields found in " + loggable.getClass().getName());
+    for (Field field : fields) {
       EvalField.evalField(field, loggable, path);
     }
     for (Method method : getAllMethods(loggable.getClass())) {
@@ -307,13 +314,6 @@ public class Monologue extends GlobalLogged {
     FILE_ONLY = newFileOnly;
     ntLogger.update(FILE_ONLY);
     dataLogger.update(FILE_ONLY);
-  }
-
-  public static void sendNetworkToFile(String subtablePath) {
-    if (isMonologueDisabled()) return;
-    subtablePath = NetworkTable.normalizeKey(subtablePath, true);
-    NetworkTableInstance.getDefault()
-        .startEntryDataLog(dataLogger.log, subtablePath, config.datalogPrefix + subtablePath);
   }
 
   private static List<Field> getAllFields(Class<?> type) {
@@ -402,5 +402,44 @@ public class Monologue extends GlobalLogged {
       return false;
     }
     return true;
+  }
+
+  private static DataLog monologifyDatalogManager() {
+    VarHandle datalogThreadHandle;
+    VarHandle datalogHandle;
+    try {
+      datalogThreadHandle = MethodHandles.privateLookupIn(DataLogManager.class, MethodHandles.lookup())
+        .findStaticVarHandle(DataLogManager.class, "m_thread", Thread.class);
+      datalogHandle = MethodHandles.privateLookupIn(DataLogManager.class, MethodHandles.lookup())
+        .findStaticVarHandle(DataLogManager.class, "m_log", DataLog.class);
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      MonologueLog.runtimeWarn("Failed to get VarHandles for DataLogManager, falling back to old method");
+      return DataLogManager.getLog();
+    }
+
+    String dir = DataLogManager.getLogDir();
+    if (!dir.isEmpty()) {
+      DataLog oldDataLog = DataLogManager.getLog();
+      Thread datalogThread = (Thread) datalogThreadHandle.get();
+      DataLogManager.logNetworkTables(false);
+      DataLogManager.stop();
+      try {
+        datalogThread.join();
+      } catch (InterruptedException e) {
+        MonologueLog.runtimeWarn("Failed to join datalog thread");
+      }
+      datalogHandle.set(null);
+      oldDataLog.setFilename("DELETME");
+      oldDataLog.close();
+      new File(dir + "/DELETME").delete();
+    }
+
+    DataLogManager.logNetworkTables(false);
+    DataLog dataLog = DataLogManager.getLog();
+    NetworkTableInstance.getDefault()
+        .startEntryDataLog(dataLog, "", config.datalogPrefix);
+    NetworkTableInstance.getDefault().startConnectionDataLog(dataLog, "NTConnection");
+    DriverStation.startDataLog(dataLog, true);
+    return dataLog;
   }
 }

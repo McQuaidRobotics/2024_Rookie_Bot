@@ -2,7 +2,6 @@ package monologue;
 
 import edu.wpi.first.util.datalog.*;
 import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.DataLogManager;
 import java.util.Arrays;
 import java.util.function.Supplier;
 import java.util.function.LongConsumer;
@@ -12,12 +11,10 @@ import java.nio.ByteOrder;
 
 class DataLogger extends GenericLogger {
     String prefix = "";
-    final DataLog log;
+    DataLog log;
 
     public DataLogger() {
         super();
-        DataLogManager.logNetworkTables(false);
-        log = DataLogManager.getLog();
     }
 
 

@@ -29,8 +29,8 @@ class GlobalLogged {
     * @param entryName The name of the entry to log, this is an absolute path.
     * @param value The value to log.
     */
-  public static void log(String entryName, boolean value) {
-    log(entryName, value, LogLevel.DEFAULT);
+  public static boolean log(String entryName, boolean value) {
+    return log(entryName, value, LogLevel.DEFAULT);
   }
   /**
     * Logs a boolean using the Monologue machinery.
@@ -39,9 +39,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static void log(String entryName, boolean value, LogLevel level) {
+  public static boolean log(String entryName, boolean value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.put(entryName, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -51,6 +55,8 @@ class GlobalLogged {
         Monologue.dataLogger.put(entryName, value, level);
       }
     }
+
+    return value;
   }
 
   /**
@@ -59,8 +65,8 @@ class GlobalLogged {
     * @param entryName The name of the entry to log, this is an absolute path.
     * @param value The value to log.
     */
-  public static void log(String entryName, int value) {
-    log(entryName, value, LogLevel.DEFAULT);
+  public static int log(String entryName, int value) {
+    return log(entryName, value, LogLevel.DEFAULT);
   }
   /**
     * Logs a int using the Monologue machinery.
@@ -69,9 +75,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static void log(String entryName, int value, LogLevel level) {
+  public static int log(String entryName, int value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.put(entryName, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -81,6 +91,8 @@ class GlobalLogged {
         Monologue.dataLogger.put(entryName, value, level);
       }
     }
+
+    return value;
   }
 
   /**
@@ -89,8 +101,8 @@ class GlobalLogged {
     * @param entryName The name of the entry to log, this is an absolute path.
     * @param value The value to log.
     */
-  public static void log(String entryName, long value) {
-    log(entryName, value, LogLevel.DEFAULT);
+  public static long log(String entryName, long value) {
+    return log(entryName, value, LogLevel.DEFAULT);
   }
   /**
     * Logs a long using the Monologue machinery.
@@ -99,9 +111,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static void log(String entryName, long value, LogLevel level) {
+  public static long log(String entryName, long value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.put(entryName, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -111,6 +127,8 @@ class GlobalLogged {
         Monologue.dataLogger.put(entryName, value, level);
       }
     }
+
+    return value;
   }
 
   /**
@@ -119,8 +137,8 @@ class GlobalLogged {
     * @param entryName The name of the entry to log, this is an absolute path.
     * @param value The value to log.
     */
-  public static void log(String entryName, float value) {
-    log(entryName, value, LogLevel.DEFAULT);
+  public static float log(String entryName, float value) {
+    return log(entryName, value, LogLevel.DEFAULT);
   }
   /**
     * Logs a float using the Monologue machinery.
@@ -129,9 +147,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static void log(String entryName, float value, LogLevel level) {
+  public static float log(String entryName, float value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.put(entryName, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -141,6 +163,8 @@ class GlobalLogged {
         Monologue.dataLogger.put(entryName, value, level);
       }
     }
+
+    return value;
   }
 
   /**
@@ -149,8 +173,8 @@ class GlobalLogged {
     * @param entryName The name of the entry to log, this is an absolute path.
     * @param value The value to log.
     */
-  public static void log(String entryName, double value) {
-    log(entryName, value, LogLevel.DEFAULT);
+  public static double log(String entryName, double value) {
+    return log(entryName, value, LogLevel.DEFAULT);
   }
   /**
     * Logs a double using the Monologue machinery.
@@ -159,9 +183,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static void log(String entryName, double value, LogLevel level) {
+  public static double log(String entryName, double value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.put(entryName, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -171,6 +199,8 @@ class GlobalLogged {
         Monologue.dataLogger.put(entryName, value, level);
       }
     }
+
+    return value;
   }
 
   /**
@@ -179,8 +209,8 @@ class GlobalLogged {
     * @param entryName The name of the entry to log, this is an absolute path.
     * @param value The value to log.
     */
-  public static void log(String entryName, String value) {
-    log(entryName, value, LogLevel.DEFAULT);
+  public static String log(String entryName, String value) {
+    return log(entryName, value, LogLevel.DEFAULT);
   }
   /**
     * Logs a String using the Monologue machinery.
@@ -189,9 +219,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static void log(String entryName, String value, LogLevel level) {
+  public static String log(String entryName, String value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.put(entryName, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -201,6 +235,8 @@ class GlobalLogged {
         Monologue.dataLogger.put(entryName, value, level);
       }
     }
+
+    return value;
   }
 
   /**
@@ -209,8 +245,8 @@ class GlobalLogged {
     * @param entryName The name of the entry to log, this is an absolute path.
     * @param value The value to log.
     */
-  public static void log(String entryName, byte[] value) {
-    log(entryName, value, LogLevel.DEFAULT);
+  public static byte[] log(String entryName, byte[] value) {
+    return log(entryName, value, LogLevel.DEFAULT);
   }
   /**
     * Logs a byte[] using the Monologue machinery.
@@ -219,9 +255,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static void log(String entryName, byte[] value, LogLevel level) {
+  public static byte[] log(String entryName, byte[] value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.put(entryName, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -231,6 +271,8 @@ class GlobalLogged {
         Monologue.dataLogger.put(entryName, value, level);
       }
     }
+
+    return value;
   }
 
   /**
@@ -239,8 +281,8 @@ class GlobalLogged {
     * @param entryName The name of the entry to log, this is an absolute path.
     * @param value The value to log.
     */
-  public static void log(String entryName, boolean[] value) {
-    log(entryName, value, LogLevel.DEFAULT);
+  public static boolean[] log(String entryName, boolean[] value) {
+    return log(entryName, value, LogLevel.DEFAULT);
   }
   /**
     * Logs a boolean[] using the Monologue machinery.
@@ -249,9 +291,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static void log(String entryName, boolean[] value, LogLevel level) {
+  public static boolean[] log(String entryName, boolean[] value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.put(entryName, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -261,6 +307,8 @@ class GlobalLogged {
         Monologue.dataLogger.put(entryName, value, level);
       }
     }
+
+    return value;
   }
 
   /**
@@ -269,8 +317,8 @@ class GlobalLogged {
     * @param entryName The name of the entry to log, this is an absolute path.
     * @param value The value to log.
     */
-  public static void log(String entryName, int[] value) {
-    log(entryName, value, LogLevel.DEFAULT);
+  public static int[] log(String entryName, int[] value) {
+    return log(entryName, value, LogLevel.DEFAULT);
   }
   /**
     * Logs a int[] using the Monologue machinery.
@@ -279,9 +327,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static void log(String entryName, int[] value, LogLevel level) {
+  public static int[] log(String entryName, int[] value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.put(entryName, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -291,6 +343,8 @@ class GlobalLogged {
         Monologue.dataLogger.put(entryName, value, level);
       }
     }
+
+    return value;
   }
 
   /**
@@ -299,8 +353,8 @@ class GlobalLogged {
     * @param entryName The name of the entry to log, this is an absolute path.
     * @param value The value to log.
     */
-  public static void log(String entryName, long[] value) {
-    log(entryName, value, LogLevel.DEFAULT);
+  public static long[] log(String entryName, long[] value) {
+    return log(entryName, value, LogLevel.DEFAULT);
   }
   /**
     * Logs a long[] using the Monologue machinery.
@@ -309,9 +363,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static void log(String entryName, long[] value, LogLevel level) {
+  public static long[] log(String entryName, long[] value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.put(entryName, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -321,6 +379,8 @@ class GlobalLogged {
         Monologue.dataLogger.put(entryName, value, level);
       }
     }
+
+    return value;
   }
 
   /**
@@ -329,8 +389,8 @@ class GlobalLogged {
     * @param entryName The name of the entry to log, this is an absolute path.
     * @param value The value to log.
     */
-  public static void log(String entryName, float[] value) {
-    log(entryName, value, LogLevel.DEFAULT);
+  public static float[] log(String entryName, float[] value) {
+    return log(entryName, value, LogLevel.DEFAULT);
   }
   /**
     * Logs a float[] using the Monologue machinery.
@@ -339,9 +399,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static void log(String entryName, float[] value, LogLevel level) {
+  public static float[] log(String entryName, float[] value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.put(entryName, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -351,6 +415,8 @@ class GlobalLogged {
         Monologue.dataLogger.put(entryName, value, level);
       }
     }
+
+    return value;
   }
 
   /**
@@ -359,8 +425,8 @@ class GlobalLogged {
     * @param entryName The name of the entry to log, this is an absolute path.
     * @param value The value to log.
     */
-  public static void log(String entryName, double[] value) {
-    log(entryName, value, LogLevel.DEFAULT);
+  public static double[] log(String entryName, double[] value) {
+    return log(entryName, value, LogLevel.DEFAULT);
   }
   /**
     * Logs a double[] using the Monologue machinery.
@@ -369,9 +435,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static void log(String entryName, double[] value, LogLevel level) {
+  public static double[] log(String entryName, double[] value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.put(entryName, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -381,6 +451,8 @@ class GlobalLogged {
         Monologue.dataLogger.put(entryName, value, level);
       }
     }
+
+    return value;
   }
 
   /**
@@ -389,8 +461,8 @@ class GlobalLogged {
     * @param entryName The name of the entry to log, this is an absolute path.
     * @param value The value to log.
     */
-  public static void log(String entryName, String[] value) {
-    log(entryName, value, LogLevel.DEFAULT);
+  public static String[] log(String entryName, String[] value) {
+    return log(entryName, value, LogLevel.DEFAULT);
   }
   /**
     * Logs a String[] using the Monologue machinery.
@@ -399,9 +471,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static void log(String entryName, String[] value, LogLevel level) {
+  public static String[] log(String entryName, String[] value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.put(entryName, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -411,6 +487,8 @@ class GlobalLogged {
         Monologue.dataLogger.put(entryName, value, level);
       }
     }
+
+    return value;
   }
 
 
@@ -420,8 +498,8 @@ class GlobalLogged {
     * @param entryName The name of the entry to log, this is an absolute path.
     * @param value The value to log.
     */
-  public static <R extends StructSerializable> void log(String entryName, R value) {
-    log(entryName, value, LogLevel.DEFAULT);
+  public static <R extends StructSerializable> R log(String entryName, R value) {
+    return log(entryName, value, LogLevel.DEFAULT);
   }
   /**
     * Logs a Serializable Struct using the Monologue machinery.
@@ -430,9 +508,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static <R extends StructSerializable> void log(String entryName, R value, LogLevel level) {
+  public static <R extends StructSerializable> R log(String entryName, R value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.put(entryName, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -442,6 +524,8 @@ class GlobalLogged {
         Monologue.dataLogger.put(entryName, value, level);
       }
     }
+
+    return value;
   }
 
   /**
@@ -450,8 +534,8 @@ class GlobalLogged {
     * @param entryName The name of the entry to log, this is an absolute path.
     * @param value The value to log.
     */
-  public static <R extends StructSerializable> void log(String entryName, R[] value) {
-    log(entryName, value, LogLevel.DEFAULT);
+  public static <R extends StructSerializable> R[] log(String entryName, R[] value) {
+    return log(entryName, value, LogLevel.DEFAULT);
   }
   /**
     * Logs an array of Serializable Structs using the Monologue machinery.
@@ -460,9 +544,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static <R extends StructSerializable> void log(String entryName, R[] value, LogLevel level) {
+  public static <R extends StructSerializable> R[] log(String entryName, R[] value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.put(entryName, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -472,6 +560,8 @@ class GlobalLogged {
         Monologue.dataLogger.put(entryName, value, level);
       }
     }
+
+    return value;
   }
 
   /**
@@ -481,8 +571,8 @@ class GlobalLogged {
     * @param struct The struct type to log.
     * @param value The value to log.
     */
-  public static <R> void log(String entryName, Struct<R> struct, R value) {
-    log(entryName, struct, value, LogLevel.DEFAULT);
+  public static <R> R log(String entryName, Struct<R> struct, R value) {
+    return log(entryName, struct, value, LogLevel.DEFAULT);
   }
   /**
     * Logs a Serializable Struct using the Monologue machinery.
@@ -492,9 +582,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static <R> void log(String entryName, Struct<R> struct, R value, LogLevel level) {
+  public static <R> R log(String entryName, Struct<R> struct, R value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, struct, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.putStruct(entryName, struct, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -504,6 +598,8 @@ class GlobalLogged {
         Monologue.dataLogger.putStruct(entryName, struct, value, level);
       }
     }
+
+    return value;
   }
 
   /**
@@ -513,8 +609,8 @@ class GlobalLogged {
     * @param struct The struct type to log.
     * @param value The value to log.
     */
-  public static <R> void log(String entryName, Struct<R> struct, R[] value) {
-    log(entryName, struct, value, LogLevel.DEFAULT);
+  public static <R> R[] log(String entryName, Struct<R> struct, R[] value) {
+    return log(entryName, struct, value, LogLevel.DEFAULT);
   }
   /**
     * Logs an array of Serializable Structs using the Monologue machinery.
@@ -524,9 +620,13 @@ class GlobalLogged {
     * @param value The value to log.
     * @param level The log level to use.
     */
-  public static <R> void log(String entryName, Struct<R> struct, R[] value, LogLevel level) {
+  public static <R> R[] log(String entryName, Struct<R> struct, R[] value, LogLevel level) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) {
+      String entryNameFinal = entryName;
+      Monologue.prematureCalls.add(() -> GlobalLogged.log(entryNameFinal, struct, value, level));
+      return value;
+    }
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.putStructArray(entryName, struct, value, level);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
@@ -536,6 +636,8 @@ class GlobalLogged {
         Monologue.dataLogger.putStructArray(entryName, struct, value, level);
       }
     }
+
+    return value;
   }
 
   /**
@@ -545,8 +647,8 @@ class GlobalLogged {
     * @param value The value to log.
     */
   public static void publishSendable(String entryName, Sendable value) {
+    if (!Monologue.hasBeenSetup() || Monologue.isMonologueDisabled()) return;
     entryName = NetworkTable.normalizeKey(entryName, true);
-    if (!Monologue.isMonologueReady("GlobalLogged: " + entryName) || Monologue.isMonologueDisabled()) return;
     Monologue.ntLogger.addSendable(entryName, value);
 
     // The Monologue made NT datalog subscriber only subs to stuff under ROOT_PATH
