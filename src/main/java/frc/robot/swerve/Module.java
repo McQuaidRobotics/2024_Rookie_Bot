@@ -29,9 +29,9 @@ public class Module implements Logged {
     private Rotation2d lastAngle = new Rotation2d();
     public Module(int moduleId, double offset){
         this.moduleId = moduleId;
-        this.encoder = new CANcoder(moduleId + 21, "DriveBus");
-        this.velocityMotor = new TalonFX((moduleId*2) + 1, "DriveBus");
-        this.angleMotor = new TalonFX((moduleId*2) + 2, "DriveBus");
+        this.encoder = new CANcoder(log("encoderId", moduleId + 21), "DriveBus");
+        this.velocityMotor = new TalonFX(log("velocityId", (moduleId*2) + 1), "DriveBus");
+        this.angleMotor = new TalonFX(log("angleId", (moduleId*2) + 2), "DriveBus");
         this.encoderAngle = encoder.getAbsolutePosition();
         this.angleMotorAngle = angleMotor.getPosition();
         this.velocityMotorVelocity = velocityMotor.getRotorVelocity();
