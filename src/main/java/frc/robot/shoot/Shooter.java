@@ -63,13 +63,11 @@ public class Shooter extends SubsystemBase implements Logged {
         return Units.radiansPerSecondToRotationsPerMinute(veloSignalShooter.refresh().getValueAsDouble());
     }
 
-    public Command spinUp(double rpm) {
-        return run(() ->this.runShooterRpm(rpm))
-            .until(this::hasSpunUp)
-            .withName("spinUp");
+    public Command spinUpRpm(double rpm) {
+        return spinUpRpm(() -> rpm);
     }
 
-    public Command spinUp(DoubleSupplier rpmSupplier) {
+    public Command spinUpRpm(DoubleSupplier rpmSupplier) {
         return run(() -> this.runShooterRpm(rpmSupplier.getAsDouble()))
             .until(this::hasSpunUp)
             .withName("spinUp");
@@ -77,7 +75,7 @@ public class Shooter extends SubsystemBase implements Logged {
     @Override
     public void periodic() {
         log("ShooterVelocity", motor.getVelocity().getValueAsDouble() * 60.0);
-        log("ShooterAmperage", motor.getStatorCurrent().getValueAsDouble() * 60.0);
+        log("ShooterAmperage", motor.getStatorCurrent().getValueAsDouble());
         log("ShooterPosition", motor.getPosition().getValueAsDouble());
         log("TargetVelocity", targetVelocity);
     }
