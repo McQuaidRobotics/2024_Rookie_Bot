@@ -22,7 +22,7 @@ public class Intake extends SubsystemBase implements Logged {
     private final TalonFX rollerMotor;
     private final StatusSignal<Double> ampSignalArm;
     public static final double BACK_HARD_STOP = 0.0;
-    private final double ARM_RATIO = .20;
+    private final double ARM_RATIO = .40;
     // private final TalonFX bot_Intake;
     private final double stowPosition = BACK_HARD_STOP/ARM_RATIO;
     private final StatusSignal<ReverseLimitValue> revLimitSignal;
