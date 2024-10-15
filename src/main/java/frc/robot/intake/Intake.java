@@ -22,7 +22,7 @@ public class Intake extends SubsystemBase implements Logged {
     private final TalonFX rollerMotor;
     private final StatusSignal<Double> ampSignalArm;
     public static final double BACK_HARD_STOP = 0.0;
-    private final double ARM_RATIO = .40;
+    private static final double ARM_RATIO = (5.0 / 1) * (5.0 / 1.0) * (22.0 / 12.0);
     // private final TalonFX bot_Intake;
     private final double stowPosition = BACK_HARD_STOP/ARM_RATIO;
     private final StatusSignal<ReverseLimitValue> revLimitSignal;
@@ -51,7 +51,7 @@ public class Intake extends SubsystemBase implements Logged {
     }
 
     public void setArmPosition(double position){
-        this.armMotor.setControl(new PositionVoltage(Units.degreesToRotations(position)/ARM_RATIO));
+        this.armMotor.setControl(new PositionVoltage(Units.degreesToRotations(position) * ARM_RATIO));
     }
 
     public void setArmVoltageOut(double volts) {
@@ -65,7 +65,7 @@ public class Intake extends SubsystemBase implements Logged {
     public void homeArmHere() {
         armMotor.setPosition(stowPosition);
     }
-    public double armDegrees() {
+    public double getArmDegrees() {
         return armMotor.getPosition().getValueAsDouble()*9.0;
     }
     public boolean isArmAt(double position, double threshold) {
