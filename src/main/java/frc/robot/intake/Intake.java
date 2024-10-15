@@ -22,7 +22,7 @@ public class Intake extends SubsystemBase implements Logged {
     private final TalonFX rollerMotor;
     private final StatusSignal<Double> ampSignalArm;
     public static final double BACK_HARD_STOP = 0.0;
-    private final double ARM_RATIO = 0.2;
+    private final double ARM_RATIO = .20;
     // private final TalonFX bot_Intake;
     private final double stowPosition = BACK_HARD_STOP/ARM_RATIO;
     private final StatusSignal<ReverseLimitValue> revLimitSignal;
@@ -38,7 +38,7 @@ public class Intake extends SubsystemBase implements Logged {
         this.rollerMotor = new TalonFX(12);
         this.ampSignalArm = armMotor.getTorqueCurrent();
         this.armMotor.getConfigurator()
-            .apply(pivotMotorConfiguration());
+            .apply(armMotorConfiguration());
         this.rollerMotor.getConfigurator()
             .apply(rollerMotorConfiguration());
         tunableArmCurrentTripValue.set(60.0);
@@ -51,7 +51,7 @@ public class Intake extends SubsystemBase implements Logged {
     }
 
     public void setArmPosition(double position){
-        this.armMotor.setControl(new PositionVoltage(Units.degreesToRotations(position)));
+        this.armMotor.setControl(new PositionVoltage(Units.degreesToRotations(position)/ARM_RATIO));
     }
 
     public void setArmVoltageOut(double volts) {
@@ -65,6 +65,9 @@ public class Intake extends SubsystemBase implements Logged {
     public void homeArmHere() {
         armMotor.setPosition(stowPosition);
     }
+    public double armDegrees() {
+        return armMotor.getPosition().getValueAsDouble()*9.0;
+    }
     public boolean isArmAt(double position, double threshold) {
         double motorPosition = position/ARM_RATIO;
         return MathUtil.isNear(motorPosition, Units.rotationsToDegrees(armMotor.getPosition().getValueAsDouble()), threshold);
@@ -76,11 +79,11 @@ public class Intake extends SubsystemBase implements Logged {
     public boolean isLimitTripped(){
         return revLimitSignal.getValue().equals(ReverseLimitValue.ClosedToGround);
     }
-    private TalonFXConfiguration pivotMotorConfiguration() {
+    private TalonFXConfiguration armMotorConfiguration() {
         var cfg = new TalonFXConfiguration();
         cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        cfg.Slot0.kP = 0.1;
+        cfg.Slot0.kP = 0.3;
         cfg.Slot0.kI = 0.0;
         cfg.Slot0.kD = 0.0;
 
@@ -116,7 +119,7 @@ public class Intake extends SubsystemBase implements Logged {
         return this.run(() -> {
                 this.setRollerVoltageOut(-12.0);
                 //TODO: get intake pos
-                this.setArmPosition(0.0);
+                this.setArmPosition(180.0 + stowPosition);
             })
             .until(this::isLimitTripped)
             .andThen(() -> this.setRollerVoltageOut(0.0))
