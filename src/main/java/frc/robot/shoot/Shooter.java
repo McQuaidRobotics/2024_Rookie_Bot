@@ -6,6 +6,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
@@ -31,6 +32,7 @@ public class Shooter extends SubsystemBase implements Logged {
         var cfg = new TalonFXConfiguration();
 
         cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        cfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         cfg.Slot0.kP = 0.1;
         cfg.Slot0.kI = 0.0;

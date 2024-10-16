@@ -1,5 +1,7 @@
 package frc.robot.intake;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -23,7 +25,6 @@ public class Intake extends SubsystemBase implements Logged {
     private final StatusSignal<Double> ampSignalArm;
     public static final double BACK_HARD_STOP = 0.0;
     private static final double ARM_RATIO = (5.0 / 1) * (5.0 / 1.0) * (22.0 / 12.0);
-    // private final TalonFX bot_Intake;
     private final double stowPosition = BACK_HARD_STOP/ARM_RATIO;
     private final StatusSignal<ReverseLimitValue> revLimitSignal;
 

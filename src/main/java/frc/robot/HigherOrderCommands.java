@@ -11,15 +11,27 @@ public class HigherOrderCommands {
 
     private static final TunableDouble shooterRpm = TunableValues.getDouble("ShooterRpm", 5600.0);
 
-
+    public static Command moveToIntake(Intake intake) {
+        return intake.run(() -> intake.setArmPosition(180.0))
+            .until(()-> intake.isArmAt(180)); 
+    }
+    public static Command moveToStow(Intake intake) {
+        return intake.run(() -> intake.setArmPosition(0.0))
+            .until(()-> intake.isArmAt(0.0));
+    } 
     public static Command transferAndShoot(Intake intake, Shooter shooter) {
+        // return Commands.parallel(
+        //     shooter.spinUpRpm(shooterRpm::value),
+        //     intake.transferNote()
+        //         .beforeStarting(Commands.waitUntil(shooter::hasSpunUp))
+        // ).beforeStarting(
+        //     intake.stowAcquisition()
+        //         .until(() -> intake.isArmAt(Intake.BACK_HARD_STOP))
+        // );
         return Commands.parallel(
             shooter.spinUpRpm(shooterRpm::value),
             intake.transferNote()
-                .beforeStarting(Commands.waitUntil(shooter::hasSpunUp))
-        ).beforeStarting(
-            intake.stowAcquisition()
-                .until(() -> intake.isArmAt(Intake.BACK_HARD_STOP))
+                .beforeStarting(Commands.waitSeconds(1.0))
         );
     }
 }
