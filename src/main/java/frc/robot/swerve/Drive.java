@@ -57,7 +57,7 @@ public class Drive extends SubsystemBase implements Logged {
     public SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
         for (int i = 0; i < 4; i++) {
-            modulePositions[i] = modules[i].getPosition();
+            modulePositions[i] = modules[i].getCurrentPosition();
         }
         return modulePositions;
     }
@@ -72,7 +72,7 @@ public class Drive extends SubsystemBase implements Logged {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, 5.0);
         log("desaturated", states);
         for (int i = 0; i < states.length; i ++) {
-            modules[i].applyState(states[i], isOpenLoop);
+            modules[i].setDesiredState(states[i], isOpenLoop);
         }
     }
 
