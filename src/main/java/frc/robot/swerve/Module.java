@@ -92,6 +92,10 @@ public class Module implements Logged {
         return new SwerveModulePosition(veloPos, Rotation2d.fromRotations(rotPos));
     }
 
+    public SwerveModuleState getState(){
+        return new SwerveModuleState(velocityMotorVelocity.getValue(), Rotation2d.fromRotations(encoderAngle.getValue()));
+    }
+
     public void applyState(SwerveModuleState state, boolean isOpenLoop){
         log("Preoptimized", state);
         state = SwerveModuleState.optimize(state, Rotation2d.fromRotations(encoderAngle.getValue()));

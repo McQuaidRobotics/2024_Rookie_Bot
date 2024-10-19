@@ -34,6 +34,7 @@ public class Robot extends TimedRobot implements Logged {
         .withDatalogPrefix("")
     );
 
+    Monologue.publishSendable("/Visualizers/Field", drive.field);
     Monologue.log("/Robot/myValue", 42.0);
     log("myValue", 42.0);
   }
