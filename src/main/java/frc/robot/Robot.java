@@ -5,8 +5,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.intake.Intake;
 import frc.robot.shoot.Shooter;
@@ -42,10 +44,14 @@ public class Robot extends TimedRobot implements Logged {
   }
 
   void cofigureBindings() {
-    driverController.x().onTrue(intake.homeIntake());
-    driverController.y().onTrue(intake.intakeAcquisition());
-    driverController.a().onTrue(HigherOrderCommands.moveToIntake(intake));
-    driverController.b().onTrue(HigherOrderCommands.moveToStow(intake));
+    driverController.a().onTrue(intake.intakeAcquisition());
+    driverController.b().onTrue(intake.ampNote());
+    driverController.y().onTrue(intake.expellNote());
+
+    driverController.povDown().onTrue(intake.homeIntake());
+
+    driverController.back().or(driverController.start())
+        .onTrue(Commands.runOnce(() -> drive.setYaw(new Rotation2d())));
 
     driverController.rightTrigger(.25)
       .onTrue(HigherOrderCommands.transferAndShoot(intake, shooter));

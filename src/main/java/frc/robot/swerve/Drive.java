@@ -23,8 +23,8 @@ public class Drive extends SubsystemBase implements Logged {
     public final Module[] modules;
     private static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
         new Translation2d(TRACK_WIDTH/2.0, -TRACK_WIDTH/2.0),
-        new Translation2d(-TRACK_WIDTH/2.0, TRACK_WIDTH/2.0),
         new Translation2d(-TRACK_WIDTH/2.0, -TRACK_WIDTH/2.0),
+        new Translation2d(-TRACK_WIDTH/2.0, TRACK_WIDTH/2.0),
         new Translation2d(TRACK_WIDTH/2.0, TRACK_WIDTH/2.0)
     );
 
@@ -32,10 +32,10 @@ public class Drive extends SubsystemBase implements Logged {
         this.gyro = new Pigeon2(33, "DriveBus");
         this.gyroDegrees = gyro.getYaw();
         this.modules= new Module[] {
-            new Module(0, -0.216064453125),
-            new Module(1, -0.39453125),
-            new Module(2, -0.41796875),
-            new Module(3, 0.106201171875)
+            new Module(0, 0.0824),
+            new Module(1, 0.10595703125),
+            new Module(2, -0.21533203125),
+            new Module(3, -0.39892578125)
         };
 
     }
@@ -81,11 +81,12 @@ public class Drive extends SubsystemBase implements Logged {
     }
 
     public Rotation2d getYaw(){
-        return Rotation2d.fromDegrees(gyroDegrees.getValue());
+        return Rotation2d.fromDegrees(gyroDegrees.refresh().getValue());
     }
 
     @Override
     public void periodic() {
+        
         log("Yaw", getYaw());
         log("Pose", swerveDrivePoseEstimator.update(getYaw(), getModulePositions()));
         log("Positions", getModulePositions());
@@ -93,5 +94,10 @@ public class Drive extends SubsystemBase implements Logged {
         for (var module : modules) {
             module.periodic();
         }
+    }
+
+    @Override
+    public String getOverrideName() {
+        return "Drive";
     }
 }

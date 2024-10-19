@@ -16,68 +16,77 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import monologue.Logged;
 
 public class Shooter extends SubsystemBase implements Logged {
-    private final TalonFX motor;
+    private final TalonFX rollerMotor;
     private final StatusSignal<Double> veloSignalShooter;
 
-    private double targetVelocity = 0.0;
+    private final VelocityVoltage veloVolt = new VelocityVoltage(0.0).withUpdateFreqHz(0.0);
+
+    private double targetVelocity = 20000;
 
     public Shooter() {
-        this.motor = new TalonFX(10);
-        this.motor.getConfigurator()
-            .apply(leadMotorConfig());
-        this.veloSignalShooter = motor.getVelocity();
+        this.rollerMotor = new TalonFX(10);
+        this.rollerMotor.getConfigurator()
+            .apply(rollerMotorConfig());
+        this.veloSignalShooter = rollerMotor.getVelocity();
+
+        // this.setDefaultCommand(this.run(() -> runShooterRpm(6000)));
     }
 
-    private TalonFXConfiguration leadMotorConfig() {
+    private TalonFXConfiguration rollerMotorConfig() {
         var cfg = new TalonFXConfiguration();
 
         cfg.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         cfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        cfg.Slot0.kP = 0.1;
+        cfg.Slot0.kP = 0.2;
         cfg.Slot0.kI = 0.0;
         cfg.Slot0.kD = 0.0;
+        cfg.Slot0.kS = 0.15;
+        cfg.Slot0.kV = 0.113;
+
+        cfg.MotorOutput.PeakReverseDutyCycle = 0.0;
+        cfg.Voltage.PeakReverseVoltage = 0.0;
+        cfg.TorqueCurrent.PeakReverseTorqueCurrent = 0.0;
 
 
         return cfg;
     }
 
-    public void runShooterRpm(double velocity) {
-        this.targetVelocity = velocity;
-        this.motor.setControl(new VelocityVoltage(velocity / 60.0));
+    public void runShooterRpm(double rpm) {
+        targetVelocity = rpm;
+        log("targetRPM", targetVelocity);
+        this.rollerMotor.setControl(veloVolt.withVelocity(rpm / 60.0));
     }
 
     public void runShooterRads(double velocity) {
-        this.targetVelocity = Units.radiansPerSecondToRotationsPerMinute(velocity);
+        targetVelocity = Units.radiansPerSecondToRotationsPerMinute(velocity);
         this.runShooterRpm(targetVelocity);
     }
 
     public boolean hasSpunUp() {
-        return MathUtil.isNear(targetVelocity, getVelocityRpm(), 3.0);
+        return MathUtil.isNear(targetVelocity, getVelocityRpm(), 75.0);
+    }
+
+    public boolean hasSpunUp(double rpm) {
+        return MathUtil.isNear(rpm, getVelocityRpm(), 75.0);
     }
 
     public void stopShooting() {
-        motor.stopMotor();
+        rollerMotor.stopMotor();
     }
 
     public double getVelocityRpm() {
-        return Units.radiansPerSecondToRotationsPerMinute(veloSignalShooter.refresh().getValueAsDouble());
+        return veloSignalShooter.refresh().getValueAsDouble() * 60.0;
     }
 
-    public Command spinUpRpm(double rpm) {
-        return spinUpRpm(() -> rpm);
-    }
-
-    public Command spinUpRpm(DoubleSupplier rpmSupplier) {
-        return run(() -> this.runShooterRpm(rpmSupplier.getAsDouble()))
-            .until(this::hasSpunUp)
-            .withName("spinUp");
+    public Command spinUpRPM(DoubleSupplier doubleSupplier) {
+        return this.run(() -> this.runShooterRpm(doubleSupplier.getAsDouble()))
+            .finallyDo(() -> this.runShooterRpm(0.0));
     }
     @Override
     public void periodic() {
-        log("ShooterVelocity", motor.getVelocity().getValueAsDouble() * 60.0);
-        log("ShooterAmperage", motor.getStatorCurrent().getValueAsDouble());
-        log("ShooterPosition", motor.getPosition().getValueAsDouble());
-        log("TargetVelocity", targetVelocity);
+        log("shooterRPM", getVelocityRpm());
+        log("hasSpunUp", hasSpunUp());
     }
+
 }

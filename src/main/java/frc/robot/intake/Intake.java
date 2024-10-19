@@ -11,12 +11,16 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.ReverseLimitValue;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.TunableValues;
+import frc.robot.util.TunableValues.TunableDouble;
 import monologue.Logged;
 
 public class Intake extends SubsystemBase implements Logged {
@@ -24,9 +28,13 @@ public class Intake extends SubsystemBase implements Logged {
     private final TalonFX rollerMotor;
     private final StatusSignal<Double> ampSignalArm;
     public static final double BACK_HARD_STOP = 0.0;
-    private static final double ARM_RATIO = (5.0 / 1) * (5.0 / 1.0) * (22.0 / 12.0);
-    private static final double stowPosition = BACK_HARD_STOP/ARM_RATIO;
+    private static final double ARM_RATIO = (5.0 / 1.0) * (5.0 / 1.0) * (22.0 / 12.0);
+    // private final TalonFX bot_Intake;
+    private final double stowPosition = BACK_HARD_STOP/ARM_RATIO;
     private final StatusSignal<ReverseLimitValue> revLimitSignal;
+
+    private final VoltageOut voltageOut = new VoltageOut(0.0).withUpdateFreqHz(0.0);
+    private final PositionVoltage posOut = new PositionVoltage(0.0).withUpdateFreqHz(0.0);
 
     DoubleEntry tunableArmCurrentTripValue = NetworkTableInstance.getDefault()
         .getDoubleTopic("/Tunable/ArmCurrentTripValue")
@@ -48,15 +56,15 @@ public class Intake extends SubsystemBase implements Logged {
     }
 
     public void setRollerVoltageOut(double volts) {
-        rollerMotor.setControl(new VoltageOut(volts));
+        rollerMotor.setControl(voltageOut.withOutput(volts));
     }
 
     public void setArmPosition(double position){
-        this.armMotor.setControl(new PositionVoltage(Units.degreesToRotations(position) * ARM_RATIO));
+        this.armMotor.setControl(posOut.withPosition(Units.degreesToRotations(position) * ARM_RATIO));
     }
 
     public void setArmVoltageOut(double volts) {
-        this.armMotor.setControl(new VoltageOut(volts));
+        this.armMotor.setControl(voltageOut.withOutput(volts));
     }
 
     public boolean isArmCurrentTripped() {
@@ -66,20 +74,23 @@ public class Intake extends SubsystemBase implements Logged {
     public void homeArmHere() {
         armMotor.setPosition(stowPosition);
     }
+
     public double getArmDegrees() {
-        return armMotor.getPosition().getValueAsDouble()*9.0;
+        return Units.rotationsToDegrees(armMotor.getPosition().getValueAsDouble() / ARM_RATIO);
     }
+
     public boolean isArmAt(double position, double threshold) {
-        double motorPosition = position/ARM_RATIO;
-        return MathUtil.isNear(motorPosition, Units.rotationsToDegrees(armMotor.getPosition().getValueAsDouble()), threshold);
+        return MathUtil.isNear(position, getArmDegrees(), threshold);
     }
     public boolean isArmAt(double position) {
-        return isArmAt(position, 2.0);
+        return isArmAt(position, 5.0);
     }
     
     public boolean isLimitTripped(){
-        return revLimitSignal.getValue().equals(ReverseLimitValue.ClosedToGround);
+        return revLimitSignal.refresh().getValue()
+            .equals(ReverseLimitValue.ClosedToGround);
     }
+
     private TalonFXConfiguration armMotorConfiguration() {
         var cfg = new TalonFXConfiguration();
         cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -88,12 +99,12 @@ public class Intake extends SubsystemBase implements Logged {
         cfg.Slot0.kI = 0.0;
         cfg.Slot0.kD = 0.0;
 
-
         return cfg;
     }
 
     private TalonFXConfiguration rollerMotorConfiguration() {
         var cfg = new TalonFXConfiguration();
+
         cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         cfg.HardwareLimitSwitch.ForwardLimitEnable = false;
         cfg.HardwareLimitSwitch.ReverseLimitEnable = true;
@@ -107,36 +118,70 @@ public class Intake extends SubsystemBase implements Logged {
             .until(this::isArmCurrentTripped)
             .withTimeout(2.0)
             .andThen(() -> this.setArmVoltageOut(0.0))
+            .andThen(Commands.waitSeconds(1.0))
             .andThen(this::homeArmHere)
             .withName("HomeAcquisition");
     }
 
     public Command stowAcquisition() {
-        //TODO: get stow pos
-        return this.run(() -> this.setArmPosition(0))
-            .until(() -> this.isArmAt(stowPosition));
+        return this.run(() -> this.setArmPosition(stowPosition))
+            .until(() -> this.isArmAt(stowPosition))
+            .withName("StowAcquisition");
     }
 
     public Command intakeAcquisition() {
+        Debouncer intakeSensorDebouncer = new Debouncer(0.1);
+        BooleanSupplier shouldRetract = () -> {
+            boolean ret = intakeSensorDebouncer.calculate(
+                isLimitTripped() && getArmDegrees() > 150.0);
+            log("shouldRetract", ret);
+            return ret;
+        };
         return this.run(() -> {
-                this.setRollerVoltageOut(-12.0);
-                //TODO: get intake pos
-                this.setArmPosition(180.0 + stowPosition);
+                this.setRollerVoltageOut(-3.0);
+                this.setArmPosition(180.0);
             })
-            .until(this::isLimitTripped)
+            .until(shouldRetract)
             .andThen(() -> this.setRollerVoltageOut(0.0))
             .andThen(
-                this.stowAcquisition(),
+                new ScheduleCommand(this.stowAcquisition()),
                 Commands.runOnce(() -> hasNote = true)
             )
             .withName("IntakeAcquisition");
     }
 
     public Command transferNote() {
-        return this.run(() -> this.stowAcquisition())
-            .andThen(() -> this.setRollerVoltageOut(6.0))
+        return this.run(() -> this.setRollerVoltageOut(12.5))
             .withTimeout(.8)
+            .finallyDo(() -> this.setRollerVoltageOut(0.0)) 
             .withName("TransferingNote"); 
+    }
+
+    public Command moveToIntake() {
+        return this.run(() -> this.setArmPosition(180.0))
+            .until(()-> this.isArmAt(180)); 
+    }
+    public Command moveToStow() {
+        return this.run(() -> this.setArmPosition(0.0))
+            .until(()-> this.isArmAt(0.0));
+    }
+    public Command expellNote() {
+        return Commands.deadline(
+            Commands.run(() -> this.setRollerVoltageOut(3))
+                .withTimeout(1.0)
+                .beforeStarting(Commands.waitSeconds(1.0)),
+            this.run(() -> setArmPosition(150))
+        ).andThen(new ScheduleCommand(moveToStow()));
+    }
+    public Command ampNote() {
+        TunableDouble voltage = TunableValues.getDouble("ampVoltage", 3.0);
+        TunableDouble position = TunableValues.getDouble("ampPosition", 84.0);
+        return Commands.deadline(
+            Commands.run(()-> this.setRollerVoltageOut(voltage.value()))
+                .withTimeout(1.0)
+                .beforeStarting(Commands.waitSeconds(1.0)),
+            this.run(() -> setArmPosition(position.value()))
+        ).andThen(new ScheduleCommand(moveToStow()));
     }
 
     @Override
@@ -151,9 +196,11 @@ public class Intake extends SubsystemBase implements Logged {
         log("RollerMotorAmperage", rollerMotor.getStatorCurrent().getValueAsDouble());
         log("ArmMotorVoltage", armMotor.getMotorVoltage().getValueAsDouble());
         log("ArmMotorVelocity", armMotor.getVelocity().getValueAsDouble());
-        log("ArmMotorCurrent", armMotor.getStatorCurrent().getValueAsDouble());
-        log("ArmMotorPosition", Units.rotationsToDegrees(armMotor.getPosition().getValueAsDouble()) / ARM_RATIO);
+        log("ArmMotorAmperage", armMotor.getStatorCurrent().getValueAsDouble());
+        log("armMotorVoltage", armMotor.getMotorVoltage().getValueAsDouble());
+        log("armMotorPosition", getArmDegrees());
         log("HasNote", hasNote);
+        log("isLimitTripped", isLimitTripped());
     }
 }
 

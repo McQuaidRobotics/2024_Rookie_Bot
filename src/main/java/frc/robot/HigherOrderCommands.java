@@ -9,24 +9,17 @@ import frc.robot.util.TunableValues.TunableDouble;
 
 public class HigherOrderCommands {
 
-    private static final TunableDouble shooterRpm = TunableValues.getDouble("ShooterRpm", 5600.0);
+    private static TunableDouble shooterRPM = TunableValues.getDouble("shooterRPM", 111111111.0);
 
-    public static Command moveToIntake(Intake intake) {
-        return intake.run(() -> intake.setArmPosition(180.0))
-            .until(()-> intake.isArmAt(180)); 
-    }
-    public static Command moveToStow(Intake intake) {
-        return intake.run(() -> intake.setArmPosition(0.0))
-            .until(()-> intake.isArmAt(0.0));
-    } 
     public static Command transferAndShoot(Intake intake, Shooter shooter) {
-        return Commands.parallel(
-            shooter.spinUpRpm(shooterRpm::value),
-            intake.transferNote()
-                .beforeStarting(Commands.waitUntil(shooter::hasSpunUp))
+        return Commands.deadline(
+            intake.transferNote().beforeStarting(
+                Commands.waitUntil(() -> shooter.hasSpunUp(6000.0))
+                .andThen(Commands.waitSeconds(0.2))
+            ),
+            shooter.spinUpRPM(shooterRPM::value)
         ).beforeStarting(
             intake.stowAcquisition()
-                .until(() -> intake.isArmAt(Intake.BACK_HARD_STOP))
         );
     }
 }
