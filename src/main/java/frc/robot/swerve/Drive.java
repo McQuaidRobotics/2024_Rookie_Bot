@@ -102,18 +102,18 @@ public class Drive extends SubsystemBase implements Logged {
     }
 
     public Rotation2d getYaw(){
-        return Rotation2d.fromDegrees(gyroDegrees.getValue());
+        if (Robot.isReal()) {
+            return Rotation2d.fromDegrees(gyroDegrees.getValue());
+        }
+        else {
+            return Rotation2d.fromDegrees(gyroSimDegrees);
+        }
     }
 
     @Override
     public void periodic() {
         log("Yaw", getYaw());
-        if (Robot.isReal()) {
-            log("Pose", swerveDrivePoseEstimator.update(getYaw(), getModulePositions()));
-        }
-        else {
-            log("Pose", swerveDrivePoseEstimator.update(Rotation2d.fromDegrees(gyroSimDegrees), getModulePositions()));
-        }
+        log("Pose", swerveDrivePoseEstimator.update(getYaw(), getModulePositions()));
         log("Positions", getModulePositions());
 
         for (var module : modules) {
