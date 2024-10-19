@@ -1,0 +1,129 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Visualizers/Field": "Field2d",
+      "/Visualizers/Field/": "Field2d",
+      "/Visualizers/Intake": "Mechanism2d",
+      "/Visualizers/SwerveModules/Module[0]": "Mechanism2d",
+      "/Visualizers/SwerveModules/Module[1]": "Mechanism2d",
+      "/Visualizers/SwerveModules/Module[2]": "Mechanism2d",
+      "/Visualizers/SwerveModules/Module[3]": "Mechanism2d"
+    },
+    "windows": {
+      "/Visualizers/Field": {
+        "builtin": "",
+        "height": 8.210550308227539,
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      },
+      "/Visualizers/Field/": {
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      },
+      "/Visualizers/Intake": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Visualizers/SwerveModules/Module[0]": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Visualizers/SwerveModules/Module[1]": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Visualizers/SwerveModules/Module[2]": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Visualizers/SwerveModules/Module[3]": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "Robot": {
+        "drive": {
+          "Pose2d##v_/Robot/drive/Pose": {
+            "Rotation2d##v_rotation": {
+              "open": true
+            },
+            "Translation2d##v_translation": {
+              "open": true
+            },
+            "open": true
+          },
+          "modules": {
+            "ModuleSim[0][0]": {
+              "Rotation2d##v_/Robot/drive/modules/ModuleSim[0][0]/Angle": {
+                "open": true
+              },
+              "SwerveModuleState##v_/Robot/drive/modules/ModuleSim[0][0]/Preoptimized": {
+                "open": true
+              },
+              "open": true
+            },
+            "ModuleSim[1][1]": {
+              "open": true
+            },
+            "ModuleSim[2][2]": {
+              "open": true
+            },
+            "Module[0][0]": {
+              "SwerveModuleState##v_/Robot/drive/modules/Module[0][0]/Postoptimized": {
+                "open": true
+              },
+              "open": true
+            },
+            "open": true
+          }
+        },
+        "open": true
+      },
+      "Shuffleboard": {
+        "open": true
+      },
+      "Visualizers": {
+        "Intake": {
+          "open": true,
+          "pivot": {
+            "Intake Arm Visualizer": {
+              "Intake Visualizer 1": {
+                "Intake Roller Visualizer 6": {
+                  "open": true
+                },
+                "Intake Roller Visualizer 7": {
+                  "open": true
+                },
+                "open": true
+              },
+              "open": true
+            },
+            "open": true
+          }
+        },
+        "open": true
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}

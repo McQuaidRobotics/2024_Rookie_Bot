@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.intake.Intake;
+import frc.robot.intake.IntakeSim;
 import frc.robot.swerve.Drive;
 import frc.robot.swerve.SwerveTeleopCmd;
 import monologue.Logged;
@@ -16,6 +18,7 @@ import monologue.Monologue.MonologueConfig;
 public class Robot extends TimedRobot implements Logged {
   private final Drive drive = new Drive();
   // private final Intake intake = new Intake();
+  private final Intake intake = new IntakeSim();
   // private final Shooter shooter = new Shooter();
   private final CommandXboxController driverController = new CommandXboxController(0);
 
@@ -40,8 +43,8 @@ public class Robot extends TimedRobot implements Logged {
   }
 
   void cofigureBindings() {
-    // driverController.x().onTrue(intake.homeIntake());
-    // driverController.y().onTrue(intake.intakeAcquisition());
+    driverController.x().onTrue(intake.homeIntake());
+    driverController.y().onTrue(intake.intakeAcquisition());
 
     // driverController.rightTrigger(.25)
     //   .onTrue(HigherOrderCommands.transferAndShoot(intake, shooter));

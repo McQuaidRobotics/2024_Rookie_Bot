@@ -30,8 +30,8 @@ public class Drive extends SubsystemBase implements Logged {
     public final Module[] modules;
     private static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
         new Translation2d(TRACK_WIDTH/2.0, -TRACK_WIDTH/2.0),
-        new Translation2d(-TRACK_WIDTH/2.0, TRACK_WIDTH/2.0),
         new Translation2d(-TRACK_WIDTH/2.0, -TRACK_WIDTH/2.0),
+        new Translation2d(-TRACK_WIDTH/2.0, TRACK_WIDTH/2.0),
         new Translation2d(TRACK_WIDTH/2.0, TRACK_WIDTH/2.0)
     );
 
@@ -83,6 +83,7 @@ public class Drive extends SubsystemBase implements Logged {
 
     public void drive(ChassisSpeeds speed, boolean isOpenLoop){
         log("speed", speed);
+        speed = ChassisSpeeds.discretize(speed, 0.2);
         setModuleState(KINEMATICS.toSwerveModuleStates(speed), isOpenLoop);
         gyroSimDegrees += Units.radiansToDegrees(speed.omegaRadiansPerSecond * 0.02);
         field.getRobotObject().setPose(swerveDrivePoseEstimator.getEstimatedPosition());
