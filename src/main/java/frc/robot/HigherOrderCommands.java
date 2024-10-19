@@ -20,18 +20,13 @@ public class HigherOrderCommands {
             .until(()-> intake.isArmAt(0.0));
     } 
     public static Command transferAndShoot(Intake intake, Shooter shooter) {
-        // return Commands.parallel(
-        //     shooter.spinUpRpm(shooterRpm::value),
-        //     intake.transferNote()
-        //         .beforeStarting(Commands.waitUntil(shooter::hasSpunUp))
-        // ).beforeStarting(
-        //     intake.stowAcquisition()
-        //         .until(() -> intake.isArmAt(Intake.BACK_HARD_STOP))
-        // );
         return Commands.parallel(
             shooter.spinUpRpm(shooterRpm::value),
             intake.transferNote()
-                .beforeStarting(Commands.waitSeconds(1.0))
+                .beforeStarting(Commands.waitUntil(shooter::hasSpunUp))
+        ).beforeStarting(
+            intake.stowAcquisition()
+                .until(() -> intake.isArmAt(Intake.BACK_HARD_STOP))
         );
     }
 }

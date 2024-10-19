@@ -25,12 +25,12 @@ public class Intake extends SubsystemBase implements Logged {
     private final StatusSignal<Double> ampSignalArm;
     public static final double BACK_HARD_STOP = 0.0;
     private static final double ARM_RATIO = (5.0 / 1) * (5.0 / 1.0) * (22.0 / 12.0);
-    private final double stowPosition = BACK_HARD_STOP/ARM_RATIO;
+    private static final double stowPosition = BACK_HARD_STOP/ARM_RATIO;
     private final StatusSignal<ReverseLimitValue> revLimitSignal;
 
     DoubleEntry tunableArmCurrentTripValue = NetworkTableInstance.getDefault()
         .getDoubleTopic("/Tunable/ArmCurrentTripValue")
-        .getEntry(60.0);
+        .getEntry(20.0);
 
     boolean hasNote = false;
 
@@ -60,7 +60,7 @@ public class Intake extends SubsystemBase implements Logged {
     }
 
     public boolean isArmCurrentTripped() {
-        return ampSignalArm.refresh().getValueAsDouble() > tunableArmCurrentTripValue.get();
+        return Math.abs(ampSignalArm.refresh().getValueAsDouble()) > tunableArmCurrentTripValue.get();
     }
 
     public void homeArmHere() {
@@ -113,7 +113,8 @@ public class Intake extends SubsystemBase implements Logged {
 
     public Command stowAcquisition() {
         //TODO: get stow pos
-        return this.run(() -> this.setArmPosition(0));
+        return this.run(() -> this.setArmPosition(0))
+            .until(() -> this.isArmAt(stowPosition));
     }
 
     public Command intakeAcquisition() {
@@ -132,8 +133,9 @@ public class Intake extends SubsystemBase implements Logged {
     }
 
     public Command transferNote() {
-        return this.run(() -> this.setRollerVoltageOut(6.0))
-            .withTimeout(0.5)
+        return this.run(() -> this.stowAcquisition())
+            .andThen(() -> this.setRollerVoltageOut(6.0))
+            .withTimeout(.8)
             .withName("TransferingNote"); 
     }
 
@@ -149,7 +151,8 @@ public class Intake extends SubsystemBase implements Logged {
         log("RollerMotorAmperage", rollerMotor.getStatorCurrent().getValueAsDouble());
         log("ArmMotorVoltage", armMotor.getMotorVoltage().getValueAsDouble());
         log("ArmMotorVelocity", armMotor.getVelocity().getValueAsDouble());
-        log("ArmMotorVoltage", armMotor.getStatorCurrent().getValueAsDouble());
+        log("ArmMotorCurrent", armMotor.getStatorCurrent().getValueAsDouble());
+        log("ArmMotorPosition", Units.rotationsToDegrees(armMotor.getPosition().getValueAsDouble()) / ARM_RATIO);
         log("HasNote", hasNote);
     }
 }

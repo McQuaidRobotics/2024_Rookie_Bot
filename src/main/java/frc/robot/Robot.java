@@ -1,3 +1,4 @@
+
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
@@ -42,7 +43,7 @@ public class Robot extends TimedRobot implements Logged {
 
   void cofigureBindings() {
     driverController.x().onTrue(intake.homeIntake());
-    // driverController.y().onTrue(intake.intakeAcquisition());
+    driverController.y().onTrue(intake.intakeAcquisition());
     driverController.a().onTrue(HigherOrderCommands.moveToIntake(intake));
     driverController.b().onTrue(HigherOrderCommands.moveToStow(intake));
 
