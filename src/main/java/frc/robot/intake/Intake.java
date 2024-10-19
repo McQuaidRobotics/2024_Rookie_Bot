@@ -22,7 +22,7 @@ public class Intake extends SubsystemBase implements Logged {
     private final TalonFX rollerMotor;
     private final StatusSignal<Double> ampSignalArm;
     public static final double BACK_HARD_STOP = 0.0;
-    private static final double ARM_RATIO = (5.0 / 1) * (5.0 / 1.0) * (22.0 / 12.0);
+    private static final double ARM_RATIO = (5.0 / 1.0) * (5.0 / 1.0) * (22.0 / 12.0);
     // private final TalonFX bot_Intake;
     private final double stowPosition = BACK_HARD_STOP/ARM_RATIO;
     private final StatusSignal<ReverseLimitValue> revLimitSignal;
@@ -65,9 +65,11 @@ public class Intake extends SubsystemBase implements Logged {
     public void homeArmHere() {
         armMotor.setPosition(stowPosition);
     }
+
     public double getArmDegrees() {
-        return armMotor.getPosition().getValueAsDouble()*9.0;
+        return Units.rotationsToDegrees(armMotor.getPosition().getValueAsDouble() / ARM_RATIO);
     }
+
     public boolean isArmAt(double position, double threshold) {
         double motorPosition = position/ARM_RATIO;
         return MathUtil.isNear(motorPosition, Units.rotationsToDegrees(armMotor.getPosition().getValueAsDouble()), threshold);
@@ -77,8 +79,9 @@ public class Intake extends SubsystemBase implements Logged {
     }
     
     public boolean isLimitTripped(){
-        return revLimitSignal.getValue().equals(ReverseLimitValue.ClosedToGround);
+        return revLimitSignal.getValue().equals(ReverseLimitValue.Open);
     }
+
     private TalonFXConfiguration armMotorConfiguration() {
         var cfg = new TalonFXConfiguration();
         cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -87,12 +90,12 @@ public class Intake extends SubsystemBase implements Logged {
         cfg.Slot0.kI = 0.0;
         cfg.Slot0.kD = 0.0;
 
-
         return cfg;
     }
 
     private TalonFXConfiguration rollerMotorConfiguration() {
         var cfg = new TalonFXConfiguration();
+
         cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         cfg.HardwareLimitSwitch.ForwardLimitEnable = false;
         cfg.HardwareLimitSwitch.ReverseLimitEnable = true;
@@ -111,15 +114,13 @@ public class Intake extends SubsystemBase implements Logged {
     }
 
     public Command stowAcquisition() {
-        //TODO: get stow pos
         return this.run(() -> this.setArmPosition(0));
     }
 
     public Command intakeAcquisition() {
         return this.run(() -> {
                 this.setRollerVoltageOut(-12.0);
-                //TODO: get intake pos
-                this.setArmPosition(180.0 + stowPosition);
+                this.setArmPosition(180.0);
             })
             .until(this::isLimitTripped)
             .andThen(() -> this.setRollerVoltageOut(0.0))
@@ -148,7 +149,9 @@ public class Intake extends SubsystemBase implements Logged {
         log("RollerMotorAmperage", rollerMotor.getStatorCurrent().getValueAsDouble());
         log("ArmMotorVoltage", armMotor.getMotorVoltage().getValueAsDouble());
         log("ArmMotorVelocity", armMotor.getVelocity().getValueAsDouble());
-        log("ArmMotorVoltage", armMotor.getStatorCurrent().getValueAsDouble());
+        log("ArmMotorAmperage", armMotor.getStatorCurrent().getValueAsDouble());
+        log("armMotorVoltage", armMotor.getMotorVoltage().getValueAsDouble());
+        log("armMotorPosition", getArmDegrees());
         log("HasNote", hasNote);
     }
 }
