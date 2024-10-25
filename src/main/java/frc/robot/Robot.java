@@ -7,6 +7,9 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -17,13 +20,14 @@ import frc.robot.swerve.SwerveTeleopCmd;
 import monologue.Logged;
 import monologue.Monologue;
 import monologue.Monologue.MonologueConfig;
-import frc.robot.Autos;
+
 public class Robot extends TimedRobot implements Logged {
   private final Drive drive = new Drive();
   private final Intake intake = new Intake();
   private final Shooter shooter = new Shooter();
-  private final Autos autos = new Autos();
+  private final Autos autos = new Autos(shooter, drive, intake);
   private final CommandXboxController driverController = new CommandXboxController(0);
+  private final SendableChooser<Command> autoRoutineChooser = new SendableChooser<>();
 
   @Override
   public void robotInit() {
@@ -40,8 +44,13 @@ public class Robot extends TimedRobot implements Logged {
         .withDatalogPrefix("")
     );
 
-    Monologue.log("/Robot/myValue", 42.0);
-    log("myValue", 42.0);
+    autoRoutineChooser.setDefaultOption("Nothing", Commands.print("Doing nothing"));
+    autoRoutineChooser.addOption("ForwardThenBackwards", autos.forwardThenBackwards());
+    autoRoutineChooser.addOption("ShootAndReturn", autos.shootAndReturn());
+    autoRoutineChooser.addOption("ShootAndIntake", autos.shootandIntake());
+
+    SmartDashboard.putData("Auto Chooser", autoRoutineChooser);
+
   }
 
   void cofigureBindings() {
@@ -50,13 +59,15 @@ public class Robot extends TimedRobot implements Logged {
     driverController.y().onTrue(intake.expellNote());
 
     driverController.povDown().onTrue(intake.homeIntake());
-    driverController.povUp().onTrue(autos.autonomousForwardThenBackwards());
+    driverController.povUp().onTrue(autos.forwardThenBackwards());
 
     driverController.back().or(driverController.start())
         .onTrue(Commands.runOnce(() -> drive.setYaw(new Rotation2d())));
 
-    driverController.rightTrigger(.25)
+    driverController.rightTrigger(0.25)
       .onTrue(HigherOrderCommands.transferAndShoot(intake, shooter));
+    driverController.leftTrigger(0.25)
+      .whileTrue(shooter.spinUpRPM(() -> 4000.0));
   }
 
   @Override
@@ -66,7 +77,9 @@ public class Robot extends TimedRobot implements Logged {
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    CommandScheduler.getInstance().cancelAll();
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -74,15 +87,16 @@ public class Robot extends TimedRobot implements Logged {
   @Override
   public void disabledExit() {}
 
-
   @Override
-  public void autonomousPeriodic() {
-
+  public void autonomousInit() {
+    CommandScheduler.getInstance().schedule(autoRoutineChooser.getSelected());
   }
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousPeriodic() {}
 
+  @Override
+  public void autonomousExit() {}
 
   @Override
   public void teleopPeriodic() {}

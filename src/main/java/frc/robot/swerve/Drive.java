@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import monologue.Logged;
 
@@ -86,7 +87,6 @@ public class Drive extends SubsystemBase implements Logged {
 
     @Override
     public void periodic() {
-        
         log("Yaw", getYaw());
         log("Pose", swerveDrivePoseEstimator.update(getYaw(), getModulePositions()));
         log("Positions", getModulePositions());
@@ -100,5 +100,8 @@ public class Drive extends SubsystemBase implements Logged {
     public String getOverrideName() {
         return "Drive";
     }
-    
+
+    public Command move(ChassisSpeeds speed, double duration) {
+        return this.run(() -> this.drive(speed, false)).withTimeout(duration);
+    }
 }
