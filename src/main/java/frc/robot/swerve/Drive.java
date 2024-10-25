@@ -29,7 +29,7 @@ public class Drive extends SubsystemBase implements Logged {
     );
 
     public Drive(){
-        this.gyro = new Pigeon2(33, "DriveBus");
+        this.gyro = new Pigeon2(33);
         this.gyroDegrees = gyro.getYaw();
         this.modules= new Module[] {
             new Module(0, 0.0824),
@@ -77,7 +77,7 @@ public class Drive extends SubsystemBase implements Logged {
     }
 
     public void setYaw(Rotation2d rot){
-        gyro.setYaw(rot.getDegrees());
+        gyro.setYaw(rot.getDegrees() + 90.0);
     }
 
     public Rotation2d getYaw(){
@@ -100,4 +100,5 @@ public class Drive extends SubsystemBase implements Logged {
     public String getOverrideName() {
         return "Drive";
     }
+    
 }

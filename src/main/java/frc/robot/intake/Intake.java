@@ -174,8 +174,8 @@ public class Intake extends SubsystemBase implements Logged {
         ).andThen(new ScheduleCommand(moveToStow()));
     }
     public Command ampNote() {
-        TunableDouble voltage = TunableValues.getDouble("ampVoltage", 3.0);
-        TunableDouble position = TunableValues.getDouble("ampPosition", 84.0);
+        TunableDouble voltage = TunableValues.getDouble("ampVoltage", 6.0);
+        TunableDouble position = TunableValues.getDouble("ampPosition", 80.0);
         return Commands.deadline(
             Commands.run(()-> this.setRollerVoltageOut(voltage.value()))
                 .withTimeout(1.0)

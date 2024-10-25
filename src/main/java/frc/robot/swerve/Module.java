@@ -67,9 +67,9 @@ public class Module implements Logged {
         this.rotationOffset = offset;
 
         moduleNumber = moduleId;
-        angleEncoder = new CANcoder(log("encoderId", moduleId + 21), "DriveBus");
-        driveMotor = new TalonFX(log("velocityId", (moduleId*2) + 1), "DriveBus");
-        angleMotor = new TalonFX(log("angleId", (moduleId*2) + 2), "DriveBus");
+        angleEncoder = new CANcoder(log("encoderId", moduleId + 21));
+        driveMotor = new TalonFX(log("velocityId", (moduleId*2) + 1));
+        angleMotor = new TalonFX(log("angleId", (moduleId*2) + 2));
 
         driveVoltSignal = driveMotor.getMotorVoltage();
         driveAmpSignal = driveMotor.getTorqueCurrent();
@@ -120,7 +120,7 @@ public class Module implements Logged {
 
         cfg.Feedback.FeedbackRemoteSensorID = angleEncoder.getDeviceID();
         cfg.Feedback.RotorToSensorRatio = kSwerve.ANGLE_GEAR_RATIO;
-        cfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        cfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
         cfg.ClosedLoopGeneral.ContinuousWrap = true;
 
         return cfg;

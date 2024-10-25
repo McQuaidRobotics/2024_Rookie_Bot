@@ -17,11 +17,12 @@ import frc.robot.swerve.SwerveTeleopCmd;
 import monologue.Logged;
 import monologue.Monologue;
 import monologue.Monologue.MonologueConfig;
-
+import frc.robot.Autos;
 public class Robot extends TimedRobot implements Logged {
   private final Drive drive = new Drive();
   private final Intake intake = new Intake();
   private final Shooter shooter = new Shooter();
+  private final Autos autos = new Autos();
   private final CommandXboxController driverController = new CommandXboxController(0);
 
   @Override
@@ -49,6 +50,7 @@ public class Robot extends TimedRobot implements Logged {
     driverController.y().onTrue(intake.expellNote());
 
     driverController.povDown().onTrue(intake.homeIntake());
+    driverController.povUp().onTrue(autos.autonomousForwardThenBackwards());
 
     driverController.back().or(driverController.start())
         .onTrue(Commands.runOnce(() -> drive.setYaw(new Rotation2d())));
@@ -74,7 +76,9 @@ public class Robot extends TimedRobot implements Logged {
 
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+
+  }
 
   @Override
   public void autonomousExit() {}

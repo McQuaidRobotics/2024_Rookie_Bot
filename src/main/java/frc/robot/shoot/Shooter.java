@@ -48,6 +48,8 @@ public class Shooter extends SubsystemBase implements Logged {
         cfg.Voltage.PeakReverseVoltage = 0.0;
         cfg.TorqueCurrent.PeakReverseTorqueCurrent = 0.0;
 
+        cfg.CurrentLimits.StatorCurrentLimitEnable = true;
+        cfg.CurrentLimits.StatorCurrentLimit = 65.0;
 
         return cfg;
     }
