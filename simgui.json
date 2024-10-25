@@ -2,6 +2,7 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Auto Chooser": "String Chooser",
       "/Visualizers/Field": "Field2d",
       "/Visualizers/Field/": "Field2d",
       "/Visualizers/Intake": "Mechanism2d",
@@ -11,6 +12,11 @@
       "/Visualizers/SwerveModules/Module[3]": "Mechanism2d"
     },
     "windows": {
+      "/SmartDashboard/Auto Chooser": {
+        "window": {
+          "visible": true
+        }
+      },
       "/Visualizers/Field": {
         "builtin": "",
         "height": 8.210550308227539,

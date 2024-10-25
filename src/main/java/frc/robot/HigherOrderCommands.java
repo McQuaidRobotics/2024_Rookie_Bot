@@ -9,17 +9,17 @@ import frc.robot.util.TunableValues.TunableDouble;
 
 public class HigherOrderCommands {
 
-    private static final TunableDouble shooterRpm = TunableValues.getDouble("ShooterRpm", 5600.0);
-
+    private static TunableDouble shooterRPM = TunableValues.getDouble("shooterRPM", 4000);
 
     public static Command transferAndShoot(Intake intake, Shooter shooter) {
-        return Commands.parallel(
-            shooter.spinUpRpm(shooterRpm::value),
-            intake.transferNote()
-                .beforeStarting(Commands.waitUntil(shooter::hasSpunUp))
+        return Commands.deadline(
+            intake.transferNote().beforeStarting(
+                Commands.waitUntil(() -> shooter.hasSpunUp(2900.0))
+                .andThen(Commands.waitSeconds(0.2))
+            ),
+            shooter.spinUpRPM(shooterRPM::value)
         ).beforeStarting(
             intake.stowAcquisition()
-                .until(() -> intake.isArmAt(Intake.BACK_HARD_STOP))
         );
     }
 }

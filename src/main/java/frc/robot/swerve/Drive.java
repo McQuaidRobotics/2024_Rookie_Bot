@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import monologue.Logged;
@@ -36,15 +37,15 @@ public class Drive extends SubsystemBase implements Logged {
     );
 
     public Drive(){
-        this.gyro = new Pigeon2(33, "DriveBus");
+        this.gyro = new Pigeon2(33);
         this.gyroDegrees = gyro.getYaw();
         this.field = new Field2d();
         if (Robot.isReal()) {
             this.modules = new Module[] {
-                new Module(0, -0.216064453125),
-                new Module(1, -0.39453125),
-                new Module(2, -0.41796875),
-                new Module(3, 0.106201171875)
+                new Module(0, 0.0824),
+                new Module(1, 0.10595703125),
+                new Module(2, -0.21533203125),
+                new Module(3, -0.39892578125)
             };
         }
         else {
@@ -56,7 +57,6 @@ public class Drive extends SubsystemBase implements Logged {
             };
         }
         visualizer = new SwerveVisualizer(modules);
-
     }
 
     SwerveDrivePoseEstimator swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(
@@ -76,7 +76,7 @@ public class Drive extends SubsystemBase implements Logged {
     public SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition[] modulePositions = new SwerveModulePosition[4];
         for (int i = 0; i < 4; i++) {
-            modulePositions[i] = modules[i].getPosition();
+            modulePositions[i] = modules[i].getCurrentPosition();
         }
         return modulePositions;
     }
@@ -84,7 +84,7 @@ public class Drive extends SubsystemBase implements Logged {
     public void drive(ChassisSpeeds speed, boolean isOpenLoop){
         log("speed", speed);
         speed = ChassisSpeeds.discretize(speed, 0.2);
-        setModuleState(KINEMATICS.toSwerveModuleStates(speed), isOpenLoop);
+        setModuleState(KINEMATICS.toSwerveModuleStates(speed), false);
         gyroSimDegrees += Units.radiansToDegrees(speed.omegaRadiansPerSecond * 0.02);
         field.getRobotObject().setPose(swerveDrivePoseEstimator.getEstimatedPosition());
     }
@@ -94,17 +94,17 @@ public class Drive extends SubsystemBase implements Logged {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, 5.0);
         log("desaturated", states);
         for (int i = 0; i < states.length; i ++) {
-            modules[i].applyState(states[i], isOpenLoop);
+            modules[i].setDesiredState(states[i], isOpenLoop);
         }
     }
 
     public void setYaw(Rotation2d rot){
-        gyro.setYaw(rot.getDegrees());
+        gyro.setYaw(rot.getDegrees() + 90.0);
     }
 
     public Rotation2d getYaw(){
         if (Robot.isReal()) {
-            return Rotation2d.fromDegrees(gyroDegrees.getValue());
+            return Rotation2d.fromDegrees(gyroDegrees.refresh().getValue());
         }
         else {
             return Rotation2d.fromDegrees(gyroSimDegrees);
@@ -122,5 +122,14 @@ public class Drive extends SubsystemBase implements Logged {
         }
 
         visualizer.update();
+    }
+
+    @Override
+    public String getOverrideName() {
+        return "Drive";
+    }
+
+    public Command move(ChassisSpeeds speed, double duration) {
+        return this.run(() -> this.drive(speed, false)).withTimeout(duration);
     }
 }

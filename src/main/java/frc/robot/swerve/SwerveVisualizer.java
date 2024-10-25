@@ -88,7 +88,7 @@ public class SwerveVisualizer {
     public void update() {
         for (int i = 0; i < modules.length; i++) {
             moduleVisual[i].update(
-                    modules[i].getState());
+                    modules[i].getCurrentState());
         }
     }
 }
