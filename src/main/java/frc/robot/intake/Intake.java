@@ -150,6 +150,26 @@ public class Intake extends SubsystemBase implements Logged {
             .withName("IntakeAcquisition");
     }
 
+    public Command intakeAcquisitionNoStow() {
+        Debouncer intakeSensorDebouncer = new Debouncer(0.1);
+        BooleanSupplier shouldRetract = () -> {
+            boolean ret = intakeSensorDebouncer.calculate(
+                isLimitTripped() && getArmDegrees() > 150.0);
+            log("shouldRetract", ret);
+            return ret;
+        };
+        return this.run(() -> {
+                this.setRollerVoltageOut(-3.0);
+                this.setArmPosition(180.0);
+            })
+            .until(shouldRetract)
+            .andThen(() -> this.setRollerVoltageOut(0.0))
+            .andThen(
+                Commands.runOnce(() -> hasNote = true)
+            )
+            .withName("IntakeAcquisition");
+    }
+
     public Command transferNote() {
         return this.run(() -> this.setRollerVoltageOut(12.5))
             .withTimeout(.8)

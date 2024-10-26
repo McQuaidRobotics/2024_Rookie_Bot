@@ -48,6 +48,7 @@ public class Robot extends TimedRobot implements Logged {
     autoRoutineChooser.addOption("ForwardThenBackwards", autos.forwardThenBackwards());
     autoRoutineChooser.addOption("ShootAndReturn", autos.shootAndReturn());
     autoRoutineChooser.addOption("ShootAndIntake", autos.shootandIntake());
+    autoRoutineChooser.addOption("justShoot", autos.shootNoMove());
 
     SmartDashboard.putData("Auto Chooser", autoRoutineChooser);
 
@@ -56,10 +57,9 @@ public class Robot extends TimedRobot implements Logged {
   void cofigureBindings() {
     driverController.a().onTrue(intake.intakeAcquisition());
     driverController.b().onTrue(intake.ampNote());
-    driverController.y().onTrue(intake.expellNote());
+    driverController.x().onTrue(intake.expellNote());
 
     driverController.povDown().onTrue(intake.homeIntake());
-    driverController.povUp().onTrue(autos.forwardThenBackwards());
 
     driverController.back().or(driverController.start())
         .onTrue(Commands.runOnce(() -> drive.setYaw(new Rotation2d())));
@@ -67,7 +67,7 @@ public class Robot extends TimedRobot implements Logged {
     driverController.rightTrigger(0.25)
       .onTrue(HigherOrderCommands.transferAndShoot(intake, shooter));
     driverController.leftTrigger(0.25)
-      .whileTrue(shooter.spinUpRPM(() -> 4000.0));
+      .whileTrue(shooter.spinUpRPM(() -> 3000.0));
   }
 
   @Override

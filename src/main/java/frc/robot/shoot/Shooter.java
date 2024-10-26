@@ -70,7 +70,7 @@ public class Shooter extends SubsystemBase implements Logged {
     }
 
     public boolean hasSpunUp(double rpm) {
-        return MathUtil.isNear(rpm, getVelocityRpm(), 75.0);
+        return MathUtil.isNear(rpm, getVelocityRpm(), 75.0) || getVelocityRpm() > rpm;
     }
 
     public void stopShooting() {

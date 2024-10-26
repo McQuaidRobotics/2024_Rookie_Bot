@@ -14,7 +14,7 @@ public class HigherOrderCommands {
     public static Command transferAndShoot(Intake intake, Shooter shooter) {
         return Commands.deadline(
             intake.transferNote().beforeStarting(
-                Commands.waitUntil(() -> shooter.hasSpunUp(2900.0))
+                Commands.waitUntil(() -> shooter.hasSpunUp(3200.0))
                 .andThen(Commands.waitSeconds(0.2))
             ),
             shooter.spinUpRPM(shooterRPM::value)

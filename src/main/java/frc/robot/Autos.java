@@ -36,6 +36,14 @@ public class Autos{
         );
     }
 
+    public Command shootNoMove() {
+        return Commands.sequence(
+            drive.runOnce(() -> drive.setYaw(new Rotation2d(0.0))),
+            intake.homeIntake(),
+            HigherOrderCommands.transferAndShoot(intake, shooter)
+        );
+    }
+
     public Command shootandIntake() {
         return Commands.sequence(
             drive.runOnce(() -> drive.setYaw(new Rotation2d(0.0))),
@@ -43,10 +51,12 @@ public class Autos{
             HigherOrderCommands.transferAndShoot(intake, shooter),
             Commands.parallel(
                 drive.move(new ChassisSpeeds(3.0, 0.0, 0.0), 2.0),
-                intake.intakeAcquisition()
+                intake.intakeAcquisitionNoStow()
             ),
-            drive.move(new ChassisSpeeds(-3.0, 0.0, 0.0), 2.0),
-            HigherOrderCommands.transferAndShoot(intake, shooter)
+            Commands.parallel(
+                drive.move(new ChassisSpeeds(-3.0, 0, 0), 2.0),
+                intake.stowAcquisition()
+            )
         );
     }
 }
